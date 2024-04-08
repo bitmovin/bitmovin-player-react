@@ -12,53 +12,61 @@ import {
 
 interface BitmovinPlayerProps {
   config: PlayerConfig;
-  source: SourceConfig;
+  source?: SourceConfig;
   className?: string;
-  latestPlayerRef?: MutableRefObject<PlayerAPI> | RefCallback<PlayerAPI>;
+  playerRef?: MutableRefObject<PlayerAPI> | RefCallback<PlayerAPI>;
   ref?: MutableRefObject<HTMLDivElement> | RefCallback<HTMLDivElement>;
 }
 
+const noSourceUsedYetSymbol = Symbol("No source used yet");
+
 export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
-  {
-    config,
-    source,
-    className,
-    latestPlayerRef: playerRefProp,
-  }: BitmovinPlayerProps,
+  { config, source, className, playerRef: playerRefProp }: BitmovinPlayerProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-  const containerElementRef = useRef<HTMLDivElement | null>(null);
-  const containerElementRefHandler = (element: HTMLDivElement | null) => {
-    containerElementRef.current = element;
+  const rootContainerElementRef = useRef<HTMLDivElement | null>(null);
+  const rootContainerElementRefHandler = (
+    rootContainerElement: HTMLDivElement | null,
+  ) => {
+    rootContainerElementRef.current = rootContainerElement;
 
     if (forwardedRef) {
-      setRef(forwardedRef, element);
+      setRef(forwardedRef, rootContainerElement);
     }
   };
-  const videoElementRef = useRef<HTMLVideoElement | null>(null);
-  const latestPlayerRef = useRef<PlayerAPI | undefined>();
+
+  const isInitialSourceEmptyRef = useRef<boolean>(!source);
+  const latestUsedSourceRef = useRef<SourceConfig | symbol | undefined>(
+    noSourceUsedYetSymbol,
+  );
+
   const [player, setPlayer] = useState<PlayerAPI | undefined>();
 
   // Initialize the player on mount.
   useEffect(
     () => {
-      const containerElement = containerElementRef.current;
-      const videoElement = videoElementRef.current;
+      const rootContainerElement = rootContainerElementRef.current;
 
-      if (!containerElement || !videoElement) {
+      if (!rootContainerElement) {
         return;
       }
+
+      // We create elements manually to workaround the React strict mode.
+      // In the strict mode the mount hook is invoked twice. Since the destroy method is async
+      // the next mount hook is invoked before the previous destroy method is finished and the new player instance
+      // messes up the old one. This workaround ensures that each player instance has its own container and video elements.
+      // This should be improved in the future if possible.
+      const { createdPlayerContainerElement, createdVideoElement } =
+        createPlayerElements(rootContainerElement);
 
       const shouldAddDefaultUi = checkShouldAddDefaultUi(config);
       const convertedConfig = convertConfig(config, shouldAddDefaultUi);
       const initializedPlayer = initializePlayer(
-        containerElement,
-        videoElement,
+        createdPlayerContainerElement,
+        createdVideoElement,
         convertedConfig,
         shouldAddDefaultUi,
       );
-
-      setRef(latestPlayerRef, initializedPlayer);
 
       if (playerRefProp) {
         setRef(playerRefProp, initializedPlayer);
@@ -67,8 +75,20 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       setPlayer(initializedPlayer);
 
       return () => {
-        setRef(latestPlayerRef, undefined);
-        initializedPlayer.destroy();
+        setRef(latestUsedSourceRef, noSourceUsedYetSymbol);
+
+        createdPlayerContainerElement.style.display = "none";
+
+        const removeOldPlayerContainerElement = () => {
+          rootContainerElement.removeChild(createdPlayerContainerElement);
+        };
+
+        initializedPlayer
+          .destroy()
+          .then(
+            removeOldPlayerContainerElement,
+            removeOldPlayerContainerElement,
+          );
       };
     },
     // Ignore the dependencies, as the effect should run only once (on mount).
@@ -78,27 +98,36 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
   // Load or reload the source.
   useEffect(() => {
-    if (
-      !player ||
-      // Ensure that the latest player is used. It might not be the case e.g. in case of hot reloading in Vite.
-      latestPlayerRef.current !== player
-    ) {
+    if (!player) {
       return;
     }
 
-    player.load(source);
+    if (source) {
+      player.load(source);
+    } else {
+      // Skip unloading the player if the source is empty on mount.
+      // This is useful in case users want to use the player instance ref to load the source manually.
+      // TODO do we need it?
+      const shouldSkipUnload =
+        isInitialSourceEmptyRef.current &&
+        latestUsedSourceRef.current === noSourceUsedYetSymbol;
+
+      if (!shouldSkipUnload) {
+        player.unload();
+      }
+    }
+
+    latestUsedSourceRef.current = source;
   }, [source, player]);
 
   return (
     <div
       className={className}
-      ref={containerElementRefHandler}
+      ref={rootContainerElementRefHandler}
       style={{
         position: "relative",
       }}
-    >
-      <video ref={videoElementRef} />
-    </div>
+    />
   );
 });
 
@@ -153,4 +182,17 @@ function initializePlayer(
   }
 
   return player;
+}
+
+function createPlayerElements(rootContainerElement: HTMLDivElement) {
+  const createdPlayerContainerElement = document.createElement("div");
+  const createdVideoElement = document.createElement("video");
+
+  rootContainerElement.appendChild(createdPlayerContainerElement);
+  createdPlayerContainerElement.appendChild(createdVideoElement);
+
+  return {
+    createdPlayerContainerElement,
+    createdVideoElement,
+  };
 }

@@ -39,13 +39,15 @@ export function MyComponent() {
 `BitmovinPlayer` keeps track of the source config and reloads the player when the source config changes:
 
 ```tsx
-const playerSources: SourceConfig[] = [
+const playerSources: Array<SourceConfig | undefined> = [
   {
     hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
   },
   {
     hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/tos/m3u8/index.m3u8",
   },
+  // To demonstrate that the source can be unloaded as well.
+  undefined,
 ];
 
 export function MyComponent() {
@@ -54,13 +56,15 @@ export function MyComponent() {
   useEffect(() => {
     let lastSourceIndex = 0;
 
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       const newIndex = ++lastSourceIndex % playerSources.length;
 
       console.log(`Switching to source ${newIndex}`, playerSources[newIndex]);
 
       setPlayerSource(playerSources[newIndex]);
     }, 15_000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -134,9 +138,56 @@ export function MyComponent() {
 
 # Attach event listeners
 
-# Get access to the player instance
+```tsx
+import { PlayerConfig, PlayerEvent } from "bitmovin-player";
 
-# Customize the player UI
+export function MyComponent() {
+  const playerConfig: PlayerConfig = {
+    key: "<key>",
+    playback: {
+      muted: true,
+      autoplay: true,
+    },
+    events: {
+      [PlayerEvent.Play]: (event) => {
+        console.log("Play event fired", event);
+      },
+    },
+  };
+
+  return (
+    <Fragment>
+      <h1>Events demo</h1>
+      <BitmovinPlayer config={playerConfig} source={playerSource} />
+    </Fragment>
+  );
+}
+```
+
+# Get player instance
+
+```tsx
+import { PlayerAPI } from "bitmovin-player";
+
+export function MyComponent() {
+  const handlePlayerRef = (player: PlayerAPI) => {
+    console.log("Player version", player.version);
+  };
+
+  return (
+    <Fragment>
+      <h1>Player instance demo</h1>
+      <BitmovinPlayer
+        playerRef={handlePlayerRef}
+        config={playerConfig}
+        source={playerSource}
+      />
+    </Fragment>
+  );
+}
+```
+
+# Customize player UI
 
 ## Use UI container
 
