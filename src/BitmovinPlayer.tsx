@@ -28,7 +28,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   const rootContainerElementRefHandler = (
     rootContainerElement: HTMLDivElement | null,
   ) => {
-    rootContainerElementRef.current = rootContainerElement;
+    setRef(rootContainerElementRef, rootContainerElement);
 
     if (forwardedRef) {
       setRef(forwardedRef, rootContainerElement);
@@ -37,6 +37,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
   const isInitialSourceEmptyRef = useRef<boolean>(!source);
   const latestUsedSourceRef = useRef<SourceConfig | symbol | undefined>(
+    // Source can be undefined, so we use a symbol to represent the case when no source has been used yet.
     noSourceUsedYetSymbol,
   );
 
@@ -76,19 +77,11 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
       return () => {
         setRef(latestUsedSourceRef, noSourceUsedYetSymbol);
-
-        createdPlayerContainerElement.style.display = "none";
-
-        const removeOldPlayerContainerElement = () => {
-          rootContainerElement.removeChild(createdPlayerContainerElement);
-        };
-
-        initializedPlayer
-          .destroy()
-          .then(
-            removeOldPlayerContainerElement,
-            removeOldPlayerContainerElement,
-          );
+        destroyPlayer(
+          initializedPlayer,
+          rootContainerElement,
+          createdPlayerContainerElement,
+        );
       };
     },
     // Ignore the dependencies, as the effect should run only once (on mount).
@@ -117,7 +110,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       }
     }
 
-    latestUsedSourceRef.current = source;
+    setRef(latestUsedSourceRef, source);
   }, [source, player]);
 
   return (
@@ -195,4 +188,20 @@ function createPlayerElements(rootContainerElement: HTMLDivElement) {
     createdPlayerContainerElement,
     createdVideoElement,
   };
+}
+
+function destroyPlayer(
+  player: PlayerAPI,
+  rootContainerElement: HTMLDivElement,
+  playerContainerElement: HTMLDivElement,
+) {
+  playerContainerElement.style.display = "none";
+
+  const removePlayerContainerElement = () => {
+    rootContainerElement.removeChild(playerContainerElement);
+  };
+
+  player
+    .destroy()
+    .then(removePlayerContainerElement, removePlayerContainerElement);
 }

@@ -3,8 +3,8 @@
 # Getting started
 
 - 1. `npm i bitmovin-player-react bitmovin-player bitmovin-player-ui --save`
-- 2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entrypoint file
-- 3. Use the player in your React component:
+- 2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entry point file
+- 3. Use the player in your React components:
 
 ```tsx
 import { PlayerConfig, SourceConfig } from "bitmovin-player";
@@ -82,7 +82,7 @@ export function MyComponent() {
 export function MyComponent() {
   const [_counter, setCounter] = useState(0);
 
-  // This will create a new source object on every render and the player will reload unnecessarily every 500ms.
+  // This will create a new source object on every render and the player will be reloaded unnecessarily every 500ms.
   const playerSource: SourceConfig = {
     hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
   };
@@ -104,8 +104,8 @@ export function MyComponent() {
 
 Instead do one of the following:
 
-- Crete a source object outside of the component (refer the "Simple demo" above)
-- Use `useState` (refer the "Dynamic source demo" above)
+- Create a source object outside of the component (refer to the "Simple demo" above)
+- Use `useState` (refer to the "Dynamic source demo" above)
 - Use `useMemo`:
 
 ```tsx
@@ -193,4 +193,4 @@ export function MyComponent() {
 
 ## Style CSS
 
-## Implement your own UI
+## Implement your custom UI
