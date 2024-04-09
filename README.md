@@ -191,6 +191,93 @@ export function MyComponent() {
 
 ## Use UI container
 
-## Style CSS
+You can use `UIContainer` from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
+
+```tsx
+import { PlaybackToggleOverlay, UIContainer } from "bitmovin-player-ui";
+
+// Ensure this function returns a new instance of the `UIContainer` on every call.
+const uiContainerFactory = () =>
+  new UIContainer({
+    components: [new PlaybackToggleOverlay()],
+  });
+
+export function MyComponent() {
+  return (
+    <Fragment>
+      <h1>UI container demo</h1>
+      <BitmovinPlayer
+        source={playerConfig}
+        config={playerConfig}
+        ui={{
+          containerFactory: uiContainerFactory,
+        }}
+      />
+    </Fragment>
+  );
+}
+```
+
+## Use UI variants
+
+You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
+
+```tsx
+```
+
+## Use custom CSS
+
+You either can implement your own CSS for the default player UI or build on top of `bitmovin-player-ui/dist/css/bitmovinplayer-ui.css`.
+
+Create new CSS file:
+
+```css
+/* customStyles.css */
+
+.bmpui-ui-playbacktimelabel {
+  color: red;
+}
+```
+
+Use the CSS file:
+
+```tsx
+import "./customStyles.css";
+
+export function MyComponent() {
+  return (
+    <Fragment>
+      <h1>Custom CSS demo</h1>
+      <div
+        style={{
+          width: `500px`,
+        }}
+      >
+        <BitmovinPlayer source={defaultPlayerSource} config={playerConfig} />
+      </div>
+    </Fragment>
+  );
+}
+
+```
+
+## Disable UI
+
+```tsx
+export function MyComponent() {
+  return (
+    <Fragment>
+      <h1>Disable UI demo</h1>
+      <BitmovinPlayer
+        source={playerConfig}
+        config={playerConfig}
+        ui={false}
+      />
+    </Fragment>
+  );
+}
+```
 
 ## Implement your custom UI
+
+TODO do we need it?

@@ -1,5 +1,13 @@
-import { Player, PlayerAPI, PlayerConfig, SourceConfig } from "bitmovin-player";
-import { UIFactory } from "bitmovin-player-ui";
+import {
+  Player,
+  PlayerAPI,
+  PlayerConfig,
+  PlayerEvent,
+  SourceConfig,
+  UIConfig,
+} from "bitmovin-player";
+import { UIContainer, UIFactory, UIManager } from "bitmovin-player-ui";
+import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
 import {
   ForwardedRef,
   forwardRef,
@@ -11,17 +19,49 @@ import {
 } from "react";
 
 interface BitmovinPlayerProps {
+  /**
+   * The following are ignored:
+   *  - `config.ui` - use `ui` prop instead, because `config.ui` is always set to `false` internally.
+   */
   config: PlayerConfig;
   source?: SourceConfig;
   className?: string;
   playerRef?: MutableRefObject<PlayerAPI> | RefCallback<PlayerAPI>;
   ref?: MutableRefObject<HTMLDivElement> | RefCallback<HTMLDivElement>;
+  /**
+   * - If `undefined` the default `UIFactory.buildDefaultUI` is used from `bitmovin-player-ui`.
+   *   Also 'bitmovin-player-ui/dist/css/bitmovinplayer-ui.css' should be included in an entry point file or custom CSS should be implemented.
+   *
+   * - If `false` the UI is disabled.
+   *
+   * - If a custom UI container factory `ui.containerFactory` or UI variants factory in `ui.variantsFactory` is provided,
+   *   it is used instead of the `UIFactory.buildDefaultUI` from `bitmovin-player-ui`.
+   *
+   *  References:
+   *    - https://www.npmjs.com/package/bitmovin-player-ui.
+   * */
+  ui?:
+    | false
+    | {
+        containerFactory: () => UIContainer;
+        config?: UIConfig;
+      }
+    | {
+        variantsFactory: () => UIVariant[];
+        config?: UIConfig;
+      };
 }
 
 const noSourceUsedYetSymbol = Symbol("No source used yet");
 
 export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
-  { config, source, className, playerRef: playerRefProp }: BitmovinPlayerProps,
+  {
+    config,
+    source,
+    className,
+    playerRef: playerRefProp,
+    ui,
+  }: BitmovinPlayerProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const rootContainerElementRef = useRef<HTMLDivElement | null>(null);
@@ -60,14 +100,14 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       const { createdPlayerContainerElement, createdVideoElement } =
         createPlayerElements(rootContainerElement);
 
-      const shouldAddDefaultUi = checkShouldAddDefaultUi(config);
-      const convertedConfig = convertConfig(config, shouldAddDefaultUi);
+      const convertedConfig = convertConfig(config);
       const initializedPlayer = initializePlayer(
         createdPlayerContainerElement,
         createdVideoElement,
         convertedConfig,
-        shouldAddDefaultUi,
       );
+
+      initializePlayerUi(initializedPlayer, ui);
 
       if (playerRefProp) {
         setRef(playerRefProp, initializedPlayer);
@@ -99,7 +139,8 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       player.load(source);
     } else {
       // Skip unloading the player if the source is empty on mount.
-      // This is useful in case users want to use the player instance ref to load the source manually.
+      // This is useful in case users want to use the player instance ref to load the source manually,
+      // so this ensures that we do not unload the imperatively loaded source.
       // TODO do we need it?
       const shouldSkipUnload =
         isInitialSourceEmptyRef.current &&
@@ -132,28 +173,39 @@ function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
   }
 }
 
-// By default Bitmovin player assumes there is `bitmovinplayer-ui.css` and `bitmovinplayer-ui.js` files hosted on the same domain
-// and tries to use them. Since this is a React wrapper it should work standalone, so if the user does not provide the `ui` boolean flag
-// or if it's `true` we assume they want a default UI.
-function checkShouldAddDefaultUi(config: PlayerConfig) {
-  return Boolean(!("ui" in config) || config.ui);
+function initializePlayerUi(player: PlayerAPI, ui: BitmovinPlayerProps["ui"]) {
+  if (ui === false) {
+    return;
+  }
+
+  let uiManager: UIManager;
+
+  // If a custom UI container is provided, use it instead of the default UI.
+  if (ui && "containerFactory" in ui && ui.containerFactory) {
+    uiManager = new UIManager(player, ui.containerFactory(), ui?.config);
+  }
+  // If custom UI variants are provided, use them instead of the default UI.
+  else if (ui && "variantsFactory" in ui && ui.variantsFactory) {
+    uiManager = new UIManager(player, ui.variantsFactory(), ui?.config);
+  } else {
+    uiManager = UIFactory.buildDefaultUI(player);
+  }
+
+  // TODO should we call `uiManager.release()` when the player is destroyed?
+  player.on(PlayerEvent.Destroy, () => {
+    uiManager.release();
+  });
 }
 
-function convertConfig(
-  originalConfig: PlayerConfig,
-  shouldAddDefaultUi: boolean,
-) {
+function convertConfig(originalConfig: PlayerConfig) {
   const convertedConfig: PlayerConfig = {
     ...originalConfig,
   };
 
-  // Dependencies are used from the package.json file, we do not support custom file locations.
-  delete originalConfig.location;
-
-  if (shouldAddDefaultUi) {
-    // Disable loading the default `bitmovinplayer-ui.css` and `bitmovinplayer-ui.js` from the same domain.
-    convertedConfig.ui = false;
-  }
+  // By default Bitmovin player assumes there is `bitmovinplayer-ui.css` and `bitmovinplayer-ui.js` files hosted on the same domain
+  // and tries to use them. Since this is a React wrapper it should work standalone.
+  // Disable loading the default `bitmovinplayer-ui.css` and `bitmovinplayer-ui.js` from the same domain by the player.
+  convertedConfig.ui = false;
 
   return convertedConfig;
 }
@@ -162,17 +214,10 @@ function initializePlayer(
   containerElement: HTMLDivElement,
   videoElement: HTMLVideoElement,
   convertedConfig: PlayerConfig,
-  shouldAddDefaultUi: boolean,
 ) {
   const player = new Player(containerElement, convertedConfig);
 
   player.setVideoElement(videoElement);
-
-  if (shouldAddDefaultUi) {
-    // Users should include 'bitmovin-player-ui/dist/css/bitmovinplayer-ui.css' in their project,
-    // or provide their custom CSS.
-    UIFactory.buildDefaultUI(player);
-  }
 
   return player;
 }
