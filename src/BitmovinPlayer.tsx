@@ -48,12 +48,12 @@ interface BitmovinPlayerProps {
     | false
     | {
         containerFactory: () => UIContainer;
-        // TODO do we need it?
+        // TODO do we need it? Could not find how this is actually used anywhere.
         config?: UIConfig;
       }
     | {
         variantsFactory: () => UIVariant[];
-        // TODO do we need it?
+        // TODO do we need it? the same as above.
         config?: UIConfig;
       };
 }

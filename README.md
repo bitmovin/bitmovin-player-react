@@ -316,4 +316,4 @@ export function MyComponent() {
 
 ## Implement your custom UI
 
-TODO do we need it?
+TODO do we need it? What would be an example?

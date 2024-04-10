@@ -8,6 +8,7 @@ const { Player: _Player, ...playerExports } =
   jest.requireActual<typeof PlayerModule>("bitmovin-player");
 
 export class FakePlayer
+  // All these methods are used by components in the tests (e.g. by the UI components).
   implements
     Pick<
       PlayerModule.PlayerAPI,

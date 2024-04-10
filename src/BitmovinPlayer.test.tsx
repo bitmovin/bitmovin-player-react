@@ -189,7 +189,7 @@ describe(BitmovinPlayer.name, () => {
   });
 
   describe("Ref", () => {
-    it("should forward the ref", () => {
+    it("should initialize the ref", () => {
       const ref: MutableRefObject<HTMLDivElement | null> = {
         current: null,
       };
