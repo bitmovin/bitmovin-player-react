@@ -44,10 +44,12 @@ interface BitmovinPlayerProps {
     | false
     | {
         containerFactory: () => UIContainer;
+        // TODO do we need it?
         config?: UIConfig;
       }
     | {
         variantsFactory: () => UIVariant[];
+        // TODO do we need it?
         config?: UIConfig;
       };
 }
@@ -77,7 +79,8 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
   const isInitialSourceEmptyRef = useRef<boolean>(!source);
   const latestUsedSourceRef = useRef<SourceConfig | symbol | undefined>(
-    // Source can be undefined, so we use a symbol to represent the case when no source has been used yet.
+    // Source can be `undefined` (request to unload a source),
+    // so we use a symbol to explicitly differentiate the case when no source has been used yet.
     noSourceUsedYetSymbol,
   );
 
@@ -159,6 +162,8 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       className={className}
       ref={rootContainerElementRefHandler}
       style={{
+        // TODO do we need it? UI is positioned absolutely, so if multiple player instances are used on the same page,
+        // their UI might overlap each other without this. Or should it be the user's responsibility to handle it?
         position: "relative",
       }}
     />

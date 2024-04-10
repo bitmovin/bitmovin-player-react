@@ -207,7 +207,7 @@ export function MyComponent() {
     <Fragment>
       <h1>UI container demo</h1>
       <BitmovinPlayer
-        source={playerConfig}
+        source={playerSource}
         config={playerConfig}
         ui={{
           containerFactory: uiContainerFactory,
@@ -223,6 +223,48 @@ export function MyComponent() {
 You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
 ```tsx
+// TODO can this import be improved?
+import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
+
+// Ensure this function returns a new instance of the `UIVariant[]` on every call.
+const variantsUiFactory = (): UIVariant[] => [
+  {
+    ui: new UIContainer({
+      components: [
+        new ControlBar({
+          components: [
+            new PlaybackToggleButton(),
+            new SeekBar(),
+            new FullscreenToggleButton(),
+          ],
+          hidden: false,
+        }),
+      ],
+    }),
+    condition: (context) => context.isFullscreen,
+  },
+  {
+    ui: new UIContainer({
+      components: [new PlaybackToggleOverlay()],
+    }),
+    condition: (context) => !context.isFullscreen,
+  },
+];
+
+export function MyComponent() {
+  return (
+    <Fragment>
+      <h1>UI variants demo</h1>
+      <BitmovinPlayer
+        source={playerSource}
+        config={playerConfig}
+        ui={{
+          variantsFactory: variantsUiFactory,
+        }}
+      />
+    </Fragment>
+  );
+}
 ```
 
 ## Use custom CSS
@@ -253,7 +295,7 @@ export function MyComponent() {
           width: `500px`,
         }}
       >
-        <BitmovinPlayer source={defaultPlayerSource} config={playerConfig} />
+        <BitmovinPlayer source={playerSource} config={playerConfig} />
       </div>
     </Fragment>
   );
@@ -269,7 +311,7 @@ export function MyComponent() {
     <Fragment>
       <h1>Disable UI demo</h1>
       <BitmovinPlayer
-        source={playerConfig}
+        source={playerSource}
         config={playerConfig}
         ui={false}
       />
