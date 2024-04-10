@@ -26,8 +26,12 @@ interface BitmovinPlayerProps {
   config: PlayerConfig;
   source?: SourceConfig;
   className?: string;
-  playerRef?: MutableRefObject<PlayerAPI> | RefCallback<PlayerAPI>;
-  ref?: MutableRefObject<HTMLDivElement> | RefCallback<HTMLDivElement>;
+  playerRef?:
+    | MutableRefObject<PlayerAPI | null | undefined>
+    | RefCallback<PlayerAPI>;
+  ref?:
+    | MutableRefObject<HTMLDivElement | null | undefined>
+    | RefCallback<HTMLDivElement | null>;
   /**
    * - If `undefined` the default `UIFactory.buildDefaultUI` is used from `bitmovin-player-ui`.
    *   Also 'bitmovin-player-ui/dist/css/bitmovinplayer-ui.css' should be included in an entry point file or custom CSS should be implemented.

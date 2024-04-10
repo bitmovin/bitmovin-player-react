@@ -227,7 +227,7 @@ You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui t
 import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
 
 // Ensure this function returns a new instance of the `UIVariant[]` on every call.
-const variantsUiFactory = (): UIVariant[] => [
+const uiVariantsFactory = (): UIVariant[] => [
   {
     ui: new UIContainer({
       components: [
@@ -259,7 +259,7 @@ export function MyComponent() {
         source={playerSource}
         config={playerConfig}
         ui={{
-          variantsFactory: variantsUiFactory,
+          variantsFactory: uiVariantsFactory,
         }}
       />
     </Fragment>
@@ -281,7 +281,7 @@ Create new CSS file:
 }
 ```
 
-Use the CSS file:
+Import the CSS file:
 
 ```tsx
 import "./customStyles.css";

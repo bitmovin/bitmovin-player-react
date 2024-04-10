@@ -5,22 +5,16 @@
 import { queryHelpers } from "@testing-library/dom";
 import { queries as testingLibraryQueries } from "@testing-library/react";
 
-function getAllByTagName(
-  container: HTMLElement,
-  tagName: keyof JSX.IntrinsicElements,
-) {
-  return Array.from(container.querySelectorAll<HTMLElement>(tagName));
+function getAllBySelector(container: HTMLElement, selector: string) {
+  return Array.from(container.querySelectorAll<HTMLElement>(selector));
 }
 
-function getByTagName(
-  container: HTMLElement,
-  tagName: keyof JSX.IntrinsicElements,
-) {
-  const result = getAllByTagName(container, tagName);
+function getBySelector(container: HTMLElement, selector: string) {
+  const result = getAllBySelector(container, selector);
 
   if (result.length > 1) {
     throw queryHelpers.getElementError(
-      `Found multiple elements with the tag ${tagName}`,
+      `Found multiple elements with the selector ${selector}`,
       container,
     );
   }
@@ -29,6 +23,6 @@ function getByTagName(
 
 export const queries = {
   ...testingLibraryQueries,
-  getAllByTagName,
-  getByTagName,
+  getAllBySelector,
+  getBySelector,
 };
