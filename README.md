@@ -290,13 +290,7 @@ export function MyComponent() {
   return (
     <Fragment>
       <h1>Custom CSS demo</h1>
-      <div
-        style={{
-          width: `500px`,
-        }}
-      >
-        <BitmovinPlayer source={playerSource} config={playerConfig} />
-      </div>
+      <BitmovinPlayer source={playerSource} config={playerConfig} />
     </Fragment>
   );
 }
