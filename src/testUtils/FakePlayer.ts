@@ -49,7 +49,9 @@ export class FakePlayer
   constructor(
     private readonly containerElement: HTMLElement,
     private readonly config: PlayerModule.PlayerConfig,
-  ) {}
+  ) {
+    containerElement.classList.add("fakebitmovinplayer-container");
+  }
 
   on() {}
 

@@ -82,7 +82,7 @@ export function MyComponent() {
 export function MyComponent() {
   const [_counter, setCounter] = useState(0);
 
-  // This will create a new source object on every render and the player will be reloaded unnecessarily every 500ms.
+  // This will create a new source object on every render and the player will be reloaded unnecessarily.
   const playerSource: SourceConfig = {
     hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
   };
@@ -271,7 +271,7 @@ export function MyComponent() {
 
 You either can implement your own CSS for the default player UI or build on top of `bitmovin-player-ui/dist/css/bitmovinplayer-ui.css`.
 
-Create new CSS file:
+Create a new CSS file:
 
 ```css
 /* customStyles.css */

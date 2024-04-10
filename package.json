@@ -24,8 +24,6 @@
     }
   },
   "scripts": {
-    "//": "Build for ESM and CJS and add the package type to the dist to ensure they are recognized correctly by the consuming projects.",
-    "//": "https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html",
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && ./addPackageType",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",

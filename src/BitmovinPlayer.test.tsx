@@ -40,6 +40,7 @@ describe(BitmovinPlayer.name, () => {
 
     expect(getAllBySelector("video")).toHaveLength(1);
     expect(getBySelector("video")).toBeInTheDocument();
+    expect(getBySelector(".fakebitmovinplayer-container")).toBeInTheDocument();
   });
 
   it("should load the source initially", async () => {
@@ -206,7 +207,7 @@ describe(BitmovinPlayer.name, () => {
       expect(refCallback).toHaveBeenCalledWith(expect.any(HTMLDivElement));
     });
 
-    it("should initialize player ref", () => {
+    it("should initialize the player ref", () => {
       const playerRef: MutableRefObject<PlayerAPI | undefined> = {
         current: undefined,
       };
@@ -245,16 +246,24 @@ describe(BitmovinPlayer.name, () => {
         },
       );
 
+      const playerContainerElementsBefore = getAllBySelector(
+        ".fakebitmovinplayer-container",
+      );
       const videoElementsBefore = getAllBySelector("video");
 
       await FakePlayer.ensureLatestDestroyFinished();
 
       const videoElementsAfter = getAllBySelector("video");
+      const playerContainerElementsAfter = getAllBySelector(
+        ".fakebitmovinplayer-container",
+      );
 
       // The player is initialized twice in strict mode because the mount hook is invoked twice.
-      // Since the destroy method is async, there can be two video elements before the first player is destroyed.
+      // Since the destroy method is async, there can be two container and video elements before the first player is destroyed.
+      expect(playerContainerElementsBefore).toHaveLength(2);
       expect(videoElementsBefore).toHaveLength(2);
-      // After the first player is destroyed, there should be only one video element.
+      // After the first player is destroyed, there should be only one container and video element.
+      expect(playerContainerElementsAfter).toHaveLength(1);
       expect(videoElementsAfter).toHaveLength(1);
       expect(getBySelector("video")).toBeInTheDocument();
       expect(FakePlayer.prototype.destroy).toHaveBeenCalledTimes(1);

@@ -38,7 +38,7 @@ interface BitmovinPlayerProps {
    *
    * - If `false` the UI is disabled.
    *
-   * - If a custom UI container factory `ui.containerFactory` or UI variants factory in `ui.variantsFactory` is provided,
+   * - If a custom UI container factory `ui.containerFactory` or UI variants factory `ui.variantsFactory` is provided,
    *   it is used instead of the `UIFactory.buildDefaultUI` from `bitmovin-player-ui`.
    *
    *  References:
@@ -57,8 +57,6 @@ interface BitmovinPlayerProps {
         config?: UIConfig;
       };
 }
-
-const noSourceUsedYetSymbol = Symbol("No source used yet");
 
 export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   {
@@ -82,11 +80,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   };
 
   const isInitialSourceEmptyRef = useRef<boolean>(!source);
-  const latestUsedSourceRef = useRef<SourceConfig | symbol | undefined>(
-    // Source can be `undefined` (request to unload a source),
-    // so we use a symbol to explicitly differentiate the case when no source has been used yet.
-    noSourceUsedYetSymbol,
-  );
+  const isSourceChangedAtLeastOnce = useRef<boolean>(false);
 
   const [player, setPlayer] = useState<PlayerAPI | undefined>();
 
@@ -105,7 +99,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       // messes up the old one. This workaround ensures that each player instance has its own container and video elements.
       // This should be improved in the future if possible.
       const { createdPlayerContainerElement, createdVideoElement } =
-        createPlayerElements(rootContainerElement);
+        preparePlayerElements(rootContainerElement);
 
       const convertedConfig = convertConfig(config);
       const initializedPlayer = initializePlayer(
@@ -123,7 +117,6 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       setPlayer(initializedPlayer);
 
       return () => {
-        setRef(latestUsedSourceRef, noSourceUsedYetSymbol);
         destroyPlayer(
           initializedPlayer,
           rootContainerElement,
@@ -144,21 +137,20 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
     if (source) {
       player.load(source);
+      setRef(isSourceChangedAtLeastOnce, true);
     } else {
       // Skip unloading the player if the source is empty on mount.
       // This is useful in case users want to use the player instance ref to load the source manually,
       // so this ensures that we do not unload the imperatively loaded source.
       // TODO do we need it?
       const shouldSkipUnload =
-        isInitialSourceEmptyRef.current &&
-        latestUsedSourceRef.current === noSourceUsedYetSymbol;
+        isInitialSourceEmptyRef.current && !isSourceChangedAtLeastOnce.current;
 
       if (!shouldSkipUnload) {
         player.unload();
+        setRef(isSourceChangedAtLeastOnce, true);
       }
     }
-
-    setRef(latestUsedSourceRef, source);
   }, [source, player]);
 
   return (
@@ -191,11 +183,11 @@ function initializePlayerUi(player: PlayerAPI, ui: BitmovinPlayerProps["ui"]) {
 
   // If a custom UI container is provided, use it instead of the default UI.
   if (ui && "containerFactory" in ui && ui.containerFactory) {
-    uiManager = new UIManager(player, ui.containerFactory(), ui?.config);
+    uiManager = new UIManager(player, ui.containerFactory(), ui.config);
   }
   // If custom UI variants are provided, use them instead of the default UI.
   else if (ui && "variantsFactory" in ui && ui.variantsFactory) {
-    uiManager = new UIManager(player, ui.variantsFactory(), ui?.config);
+    uiManager = new UIManager(player, ui.variantsFactory(), ui.config);
   } else {
     uiManager = UIFactory.buildDefaultUI(player);
   }
@@ -231,7 +223,7 @@ function initializePlayer(
   return player;
 }
 
-function createPlayerElements(rootContainerElement: HTMLDivElement) {
+function preparePlayerElements(rootContainerElement: HTMLDivElement) {
   const createdPlayerContainerElement = document.createElement("div");
   const createdVideoElement = document.createElement("video");
 
