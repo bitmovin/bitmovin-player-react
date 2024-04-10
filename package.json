@@ -4,13 +4,13 @@
   "description": "A React component that creates an instance of Bitmovin player",
   "license": "MIT",
   "author": "Bitmovin",
-  "homepage": "https://github.com/.../...#readme",
+  "homepage": "https://github.com/bitmovin/bitmovin-player-react#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/.../....git"
+    "url": "git+https://github.com/bitmovin/bitmovin-player-react.git"
   },
   "bugs": {
-    "url": "https://github.com/.../.../issues"
+    "url": "https://github.com/bitmovin/bitmovin-player-react/issues"
   },
   "type": "module",
   "types": "./dist/esm/index.d.ts",
@@ -24,6 +24,7 @@
     }
   },
   "scripts": {
+    "//": "Build for ESM and CJS and add the package type to the dist to ensure they are recognized correctly by the consuming projects.",
     "//": "https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html",
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && ./addPackageType",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
