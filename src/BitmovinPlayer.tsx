@@ -143,6 +143,9 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       // This is useful in case users want to use the player instance ref to load the source manually,
       // so this ensures that we do not unload the imperatively loaded source.
       // TODO do we need it?
+      //
+      // Apart from that, this check ensures that `player.unload` is not called unnecessarily on mount if the source is empty.
+      // TODO do we actually care?
       const shouldSkipUnload =
         isInitialSourceEmptyRef.current && !isSourceChangedAtLeastOnce.current;
 
