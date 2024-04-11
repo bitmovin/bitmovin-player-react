@@ -129,7 +129,7 @@ export function MyComponent() {
 
   return (
     <Fragment>
-      <h1>Wrong source usage demo</h1>
+      <h1>Right source usage demo</h1>
       <BitmovinPlayer config={playerConfig} source={playerSource} />
     </Fragment>
   );
