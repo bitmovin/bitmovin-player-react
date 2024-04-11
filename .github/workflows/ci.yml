@@ -44,13 +44,6 @@ jobs:
       - name: Jest
         run: npm run test:ci
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: |
-            coverage
-          retention-days: 1
-
   code-style:
     name: Code format check
     runs-on:
@@ -90,31 +83,5 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
 
-      - name: Create types
+      - name: Build
         run: npm run build
-
-  sonar:
-    name: Run Sonar Analysis
-    needs: test
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    runs-on:
-      labels: bitmovin-player-react
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ inputs.github-ref || github.sha }}
-
-      - name: Download coverage file
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-report
-          path: |
-            coverage
-
-      - name: Run sonarcloud scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
