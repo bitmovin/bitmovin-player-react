@@ -24,7 +24,7 @@
     }
   },
   "scripts": {
-    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && ./addPackageType",
+    "build": "rm -fr dist/* && tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json && ./addPackageType",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
