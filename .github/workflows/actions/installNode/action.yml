@@ -1,0 +1,9 @@
+name: Install Node
+description: "Installs Node.JS"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20

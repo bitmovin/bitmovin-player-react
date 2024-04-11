@@ -1,0 +1,27 @@
+name: Install dependencies
+description: "Installs dependencies from package-lock.json, if available uses cache and skips `npm ci`"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+
+    - name: Cache node modules
+      id: cache-nodemodules
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-node-modules
+      with:
+        # caching node_modules
+        path: node_modules
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+    - shell: bash
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      run: |
+        npm ci
