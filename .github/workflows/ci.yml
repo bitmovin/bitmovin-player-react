@@ -46,8 +46,7 @@ jobs:
 
   code-style:
     name: Code format check
-    runs-on:
-      labels: bitmovin-player-react
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -67,8 +66,7 @@ jobs:
 
   build:
     name: Build
-    runs-on:
-      labels: bitmovin-player-react
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
