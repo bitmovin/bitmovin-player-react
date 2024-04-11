@@ -67,8 +67,6 @@ describe(BitmovinPlayer.name, () => {
 
     await waitFor(() => {
       expect(FakePlayer.prototype.load).toHaveBeenCalled();
-    });
-    await waitFor(() => {
       expect(FakePlayer.prototype.unload).toHaveBeenCalled();
     });
   });

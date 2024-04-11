@@ -88,9 +88,11 @@ export function MyComponent() {
   };
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setCounter((previousCounter) => previousCounter + 1);
     }, 500);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -122,14 +124,16 @@ export function MyComponent() {
   );
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setCounter((previousCounter) => previousCounter + 1);
     }, 500);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <Fragment>
-      <h1>Wrong source usage demo</h1>
+      <h1>Right source usage demo</h1>
       <BitmovinPlayer config={playerConfig} source={playerSource} />
     </Fragment>
   );

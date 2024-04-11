@@ -143,6 +143,9 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       // This is useful in case users want to use the player instance ref to load the source manually,
       // so this ensures that we do not unload the imperatively loaded source.
       // TODO do we need it?
+      //
+      // Apart from that, this check ensures that `player.unload` is not called unnecessarily on mount if the source is empty.
+      // TODO do we actually care?
       const shouldSkipUnload =
         isInitialSourceEmptyRef.current && !isSourceChangedAtLeastOnce.current;
 
@@ -182,11 +185,11 @@ function initializePlayerUi(player: PlayerAPI, ui: BitmovinPlayerProps["ui"]) {
   let uiManager: UIManager;
 
   // If a custom UI container is provided, use it instead of the default UI.
-  if (ui && "containerFactory" in ui && ui.containerFactory) {
+  if (ui && "containerFactory" in ui) {
     uiManager = new UIManager(player, ui.containerFactory(), ui.config);
   }
   // If custom UI variants are provided, use them instead of the default UI.
-  else if (ui && "variantsFactory" in ui && ui.variantsFactory) {
+  else if (ui && "variantsFactory" in ui) {
     uiManager = new UIManager(player, ui.variantsFactory(), ui.config);
   } else {
     uiManager = UIFactory.buildDefaultUI(player);
