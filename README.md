@@ -88,9 +88,11 @@ export function MyComponent() {
   };
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setCounter((previousCounter) => previousCounter + 1);
     }, 500);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -122,9 +124,11 @@ export function MyComponent() {
   );
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setCounter((previousCounter) => previousCounter + 1);
     }, 500);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
