@@ -41,6 +41,8 @@ export class FakePlayer
       | "destroy"
     >
 {
+  public static readonly containerClassName = "fakebitmovinplayer-container";
+
   private videoElement?: HTMLVideoElement;
 
   private source?: PlayerModule.SourceConfig;
@@ -51,7 +53,7 @@ export class FakePlayer
     private readonly containerElement: HTMLElement,
     private readonly config: PlayerModule.PlayerConfig,
   ) {
-    containerElement.classList.add("fakebitmovinplayer-container");
+    containerElement.classList.add(FakePlayer.containerClassName);
   }
 
   on() {}

@@ -40,7 +40,9 @@ describe(BitmovinPlayer.name, () => {
 
     expect(getAllBySelector("video")).toHaveLength(1);
     expect(getBySelector("video")).toBeInTheDocument();
-    expect(getBySelector(".fakebitmovinplayer-container")).toBeInTheDocument();
+    expect(
+      getBySelector(`.${FakePlayer.containerClassName}`),
+    ).toBeInTheDocument();
   });
 
   it("should load the source initially", async () => {
@@ -247,7 +249,7 @@ describe(BitmovinPlayer.name, () => {
       );
 
       const playerContainerElementsBefore = getAllBySelector(
-        ".fakebitmovinplayer-container",
+        `.${FakePlayer.containerClassName}`,
       );
       const videoElementsBefore = getAllBySelector("video");
 
@@ -255,7 +257,7 @@ describe(BitmovinPlayer.name, () => {
 
       const videoElementsAfter = getAllBySelector("video");
       const playerContainerElementsAfter = getAllBySelector(
-        ".fakebitmovinplayer-container",
+        `.${FakePlayer.containerClassName}`,
       );
 
       // The player is initialized twice in strict mode because the mount hook is invoked twice.
