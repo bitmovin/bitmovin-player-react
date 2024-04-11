@@ -231,12 +231,9 @@ const uiVariantsFactory = (): UIVariant[] => [
   {
     ui: new UIContainer({
       components: [
+        new PlaybackToggleOverlay(),
         new ControlBar({
-          components: [
-            new PlaybackToggleButton(),
-            new SeekBar(),
-            new FullscreenToggleButton(),
-          ],
+          components: [new SeekBar()],
           hidden: false,
         }),
       ],
@@ -313,7 +310,3 @@ export function MyComponent() {
   );
 }
 ```
-
-## Implement your custom UI
-
-TODO do we need it? What would be an example?
