@@ -22,13 +22,13 @@ interface BitmovinPlayerProps {
     | MutableRefObject<HTMLDivElement | null | undefined>
     | RefCallback<HTMLDivElement | null>;
   /**
-   * - If `config.ui` is false the UI is disabled.
+   * - If the `config.ui` is `false` the UI is disabled.
    *
-   * - If `config.ui` is a truthy value  the default `UIFactory.buildDefaultUI` is used from `bitmovin-player-ui`.
-   *   The `config.ui` is passed to the internal `UIManager` that initializes as UI configuration.
+   * - If the `config.ui` is a truthy value the default `UIFactory.buildDefaultUI` is used from `bitmovin-player-ui`.
+   *   The `config.ui` is passed to the internal `UIManager` that initializes UI as UI configuration.
    *   Also 'bitmovin-player-ui/dist/css/bitmovinplayer-ui.css' should be included in an entry point file or custom CSS should be implemented.
    *
-   * - If `config.ui` is a truthy value and a UI container factory `ui.containerFactory` or UI variants factory `ui.variantsFactory` is provided,
+   * - If the `config.ui` is a truthy value and a UI container factory `ui.containerFactory` or a UI variants factory `ui.variantsFactory` is provided,
    *   it is used instead of the `UIFactory.buildDefaultUI` from `bitmovin-player-ui`.
    *
    *  References:
