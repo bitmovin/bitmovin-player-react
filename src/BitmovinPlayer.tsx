@@ -156,17 +156,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
     }
   }, [source, player]);
 
-  return (
-    <div
-      className={className}
-      ref={rootContainerElementRefHandler}
-      style={{
-        // TODO do we need it? UI is positioned absolutely, so if multiple player instances are used on the same page,
-        // their UI might overlap each other without this. Or should it be the user's responsibility to handle it?
-        position: "relative",
-      }}
-    />
-  );
+  return <div className={className} ref={rootContainerElementRefHandler} />;
 });
 
 function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
