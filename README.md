@@ -2,9 +2,9 @@
 
 # Getting started
 
-- 1. `npm i bitmovin-player-react bitmovin-player bitmovin-player-ui --save`
-- 2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entry point file
-- 3. Use the player in your React components:
+1. `npm i bitmovin-player-react bitmovin-player bitmovin-player-ui --save`
+2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entry point file
+3. Use the player in your React components:
 
 ```tsx
 import { PlayerConfig, SourceConfig } from "bitmovin-player";
