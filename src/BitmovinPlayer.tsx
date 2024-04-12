@@ -182,23 +182,16 @@ function initializePlayerUi(player: PlayerAPI, ui: BitmovinPlayerProps["ui"]) {
     return;
   }
 
-  let uiManager: UIManager;
-
   // If a custom UI container is provided, use it instead of the default UI.
   if (ui && "containerFactory" in ui) {
-    uiManager = new UIManager(player, ui.containerFactory(), ui.config);
+    new UIManager(player, ui.containerFactory(), ui.config);
   }
   // If custom UI variants are provided, use them instead of the default UI.
   else if (ui && "variantsFactory" in ui) {
-    uiManager = new UIManager(player, ui.variantsFactory(), ui.config);
+    new UIManager(player, ui.variantsFactory(), ui.config);
   } else {
-    uiManager = UIFactory.buildDefaultUI(player);
+    UIFactory.buildDefaultUI(player);
   }
-
-  // TODO should we call `uiManager.release()` when the player is destroyed?
-  player.on(PlayerEvent.Destroy, () => {
-    uiManager.release();
-  });
 }
 
 function convertConfig(originalConfig: PlayerConfig) {
