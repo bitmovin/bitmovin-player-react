@@ -156,7 +156,7 @@ function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
 function initializePlayerUi(
   player: PlayerAPI,
   playerConfig: PlayerConfig,
-  customUi: BitmovinPlayerProps["customUi"],
+  customUi?: BitmovinPlayerProps["customUi"],
 ) {
   if (playerConfig.ui === false) {
     return;
