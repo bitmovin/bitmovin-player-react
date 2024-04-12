@@ -125,7 +125,7 @@ describe(BitmovinPlayer.name, () => {
       const { getBySelector } = render(
         <BitmovinPlayer
           config={playerConfig}
-          ui={{
+          customUi={{
             containerFactory: uiContainerFactory,
           }}
         />,
@@ -156,7 +156,7 @@ describe(BitmovinPlayer.name, () => {
       const { getBySelector } = render(
         <BitmovinPlayer
           config={playerConfig}
-          ui={{
+          customUi={{
             variantsFactory: uiVariantsFactory,
           }}
         />,
@@ -176,7 +176,12 @@ describe(BitmovinPlayer.name, () => {
 
     it("should not initialize any UI", () => {
       const { getBySelector } = render(
-        <BitmovinPlayer config={playerConfig} ui={false} />,
+        <BitmovinPlayer
+          config={{
+            ...playerConfig,
+            ui: false,
+          }}
+        />,
         {
           queries,
         },

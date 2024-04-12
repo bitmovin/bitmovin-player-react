@@ -2,9 +2,9 @@
 
 # Getting started
 
-- 1. `npm i bitmovin-player-react bitmovin-player bitmovin-player-ui --save`
-- 2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entry point file
-- 3. Use the player in your React components:
+1. `npm i bitmovin-player-react bitmovin-player bitmovin-player-ui --save`
+2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entry point file
+3. Use the player in your React components:
 
 ```tsx
 import { PlayerConfig, SourceConfig } from "bitmovin-player";
@@ -213,7 +213,7 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        ui={{
+        customUi={{
           containerFactory: uiContainerFactory,
         }}
       />
@@ -227,7 +227,6 @@ export function MyComponent() {
 You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
 ```tsx
-// TODO can this import be improved?
 import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
 
 // Ensure this function returns a new instance of the `UIVariant[]` on every call.
@@ -259,7 +258,7 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        ui={{
+        customUi={{
           variantsFactory: uiVariantsFactory,
         }}
       />
@@ -301,6 +300,18 @@ export function MyComponent() {
 ## Disable UI
 
 ```tsx
+import { PlayerConfig } from "bitmovin-player";
+
+const playerConfig: PlayerConfig = {
+  key: "<key>",
+  playback: {
+    muted: true,
+    autoplay: true,
+  },
+  // Disable UI
+  ui: false,
+};
+
 export function MyComponent() {
   return (
     <Fragment>
@@ -308,7 +319,6 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        ui={false}
       />
     </Fragment>
   );

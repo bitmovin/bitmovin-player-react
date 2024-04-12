@@ -20,16 +20,16 @@ echo "Publishing to NPM..."
 read -p "(Press enter to continue)"
 
 # Set the registry to the public npm registry.
-npm config set registry https://registry.npmjs.org/
+npm config set registry https://registry.npmjs.org
 
 # Log in to the npm registry using the access token.
 echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
 npm whoami || npm login
 
 # Test the publishing process.
-$(cd .. && npm publish --dry-run=true)
+(cd .. && npm publish --dry-run=true)
 
 read -p "Does the above look correct? (Press enter to continue)"
 
 # Publish the package to the npm registry.
-$(cd .. && npm publish)
+(cd .. && npm publish)
