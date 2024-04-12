@@ -4,7 +4,9 @@ module.exports = {
   plugins: [
     "simple-import-sort",
     "react-refresh",
-    // https://stackoverflow.com/a/72491599
+    // Enforce extensions in import statements to support ESM:
+    //  - https://www.npmjs.com/package/eslint-plugin-require-extensions
+    //  - https://stackoverflow.com/a/72491599
     "require-extensions",
   ],
   extends: [
