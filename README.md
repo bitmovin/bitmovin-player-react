@@ -227,7 +227,6 @@ export function MyComponent() {
 You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
 ```tsx
-// TODO can this import be improved?
 import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
 
 // Ensure this function returns a new instance of the `UIVariant[]` on every call.
