@@ -2,7 +2,6 @@ import {
   Player,
   PlayerAPI,
   PlayerConfig,
-  PlayerEvent,
   SourceConfig,
   UIConfig,
 } from "bitmovin-player";
