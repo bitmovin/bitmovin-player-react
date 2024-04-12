@@ -1,10 +1,4 @@
-import {
-  Player,
-  PlayerAPI,
-  PlayerConfig,
-  SourceConfig,
-  UIConfig,
-} from "bitmovin-player";
+import { Player, PlayerAPI, PlayerConfig, SourceConfig } from "bitmovin-player";
 import { UIContainer, UIFactory, UIManager } from "bitmovin-player-ui";
 import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
 import {
@@ -18,10 +12,6 @@ import {
 } from "react";
 
 interface BitmovinPlayerProps {
-  /**
-   * The following are ignored:
-   *  - `config.ui` - use `ui` prop instead, because `config.ui` is always set to `false` internally.
-   */
   config: PlayerConfig;
   source?: SourceConfig;
   className?: string;
@@ -32,28 +22,25 @@ interface BitmovinPlayerProps {
     | MutableRefObject<HTMLDivElement | null | undefined>
     | RefCallback<HTMLDivElement | null>;
   /**
-   * - If `undefined` the default `UIFactory.buildDefaultUI` is used from `bitmovin-player-ui`.
+   * - If `config.ui` is false the UI is disabled.
+   *
+   * - If `config.ui` is a truthy value  the default `UIFactory.buildDefaultUI` is used from `bitmovin-player-ui`.
+   *   The `config.ui` is passed to the internal `UIManager` that initializes as UI configuration.
    *   Also 'bitmovin-player-ui/dist/css/bitmovinplayer-ui.css' should be included in an entry point file or custom CSS should be implemented.
    *
-   * - If `false` the UI is disabled.
-   *
-   * - If a custom UI container factory `ui.containerFactory` or UI variants factory `ui.variantsFactory` is provided,
+   * - If `config.ui` is a truthy value and a UI container factory `ui.containerFactory` or UI variants factory `ui.variantsFactory` is provided,
    *   it is used instead of the `UIFactory.buildDefaultUI` from `bitmovin-player-ui`.
    *
    *  References:
    *    - https://www.npmjs.com/package/bitmovin-player-ui.
+   *    - https://cdn.bitmovin.com/player/web/8/docs/interfaces/Core.PlayerConfig.html#ui.
    * */
-  ui?:
-    | false
+  customUi?:
     | {
         containerFactory: () => UIContainer;
-        // TODO do we need it? Could not find how this is actually used anywhere.
-        config?: UIConfig;
       }
     | {
         variantsFactory: () => UIVariant[];
-        // TODO do we need it? the same as above.
-        config?: UIConfig;
       };
 }
 
@@ -63,7 +50,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
     source,
     className,
     playerRef: playerRefProp,
-    ui,
+    customUi,
   }: BitmovinPlayerProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
@@ -107,7 +94,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
         convertedConfig,
       );
 
-      initializePlayerUi(initializedPlayer, ui);
+      initializePlayerUi(initializedPlayer, config, customUi);
 
       if (playerRefProp) {
         setRef(playerRefProp, initializedPlayer);
@@ -166,18 +153,22 @@ function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
   }
 }
 
-function initializePlayerUi(player: PlayerAPI, ui: BitmovinPlayerProps["ui"]) {
-  if (ui === false) {
+function initializePlayerUi(
+  player: PlayerAPI,
+  playerConfig: PlayerConfig,
+  customUi: BitmovinPlayerProps["customUi"],
+) {
+  if (playerConfig.ui === false) {
     return;
   }
 
   // If a custom UI container is provided, use it instead of the default UI.
-  if (ui && "containerFactory" in ui) {
-    new UIManager(player, ui.containerFactory(), ui.config);
+  if (customUi && "containerFactory" in customUi) {
+    new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
   // If custom UI variants are provided, use them instead of the default UI.
-  else if (ui && "variantsFactory" in ui) {
-    new UIManager(player, ui.variantsFactory(), ui.config);
+  else if (customUi && "variantsFactory" in customUi) {
+    new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
   } else {
     UIFactory.buildDefaultUI(player);
   }

@@ -213,7 +213,7 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        ui={{
+        customUi={{
           containerFactory: uiContainerFactory,
         }}
       />
@@ -258,7 +258,7 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        ui={{
+        customUi={{
           variantsFactory: uiVariantsFactory,
         }}
       />
@@ -300,6 +300,18 @@ export function MyComponent() {
 ## Disable UI
 
 ```tsx
+import { PlayerConfig } from "bitmovin-player";
+
+const playerConfig: PlayerConfig = {
+  key: "<key>",
+  playback: {
+    muted: true,
+    autoplay: true,
+  },
+  // Disable UI
+  ui: false,
+};
+
 export function MyComponent() {
   return (
     <Fragment>
@@ -307,7 +319,6 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        ui={false}
       />
     </Fragment>
   );
