@@ -1,0 +1,35 @@
+name: Release
+run-name: Release on ${{ github.ref }} branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      github-ref:
+        required: true
+        type: string
+        default: 'main'
+        description: Ref to build
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.github-ref || github.sha }}
+
+      - name: Install Node.JS
+        uses: ./.github/actions/installNode
+
+      - name: Install dependencies
+        uses: ./.github/actions/installDependencies
+
+      - name: Build
+        run: npm run build
+
+      - name: Release  to NPM
+        run: ./release/release.sh
+        env:
+          NPM_RELEASE_TOKEN: ${{ secrets.NPM_RELEASE_TOKEN }}
