@@ -17,12 +17,12 @@ fi
 VERSION=`git describe --tags --abbrev=0`
 echo "Retrieved VERSION from 'git describe'. Make sure this is correct :"
 echo $VERSION
-if [ "$nonInteractive" = true ] ; then
+if [ "$nonInteractive" = false ] ; then
   read -p "(Press enter to continue)"
 fi
 
 echo "Publishing to NPM..."
-if [ "$nonInteractive" = true ] ; then
+if [ "$nonInteractive" = false ] ; then
   read -p "(Press enter to continue)"
 fi
 
