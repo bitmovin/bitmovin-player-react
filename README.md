@@ -76,70 +76,6 @@ export function MyComponent() {
 }
 ```
 
-### Avoid source object recreation on every render
-
-```tsx
-export function MyComponent() {
-  const [_counter, setCounter] = useState(0);
-
-  // This will create a new source object on every render and the player will be reloaded unnecessarily.
-  const playerSource: SourceConfig = {
-    hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
-  };
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCounter((previousCounter) => previousCounter + 1);
-    }, 500);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-    <Fragment>
-      <h1>Wrong source usage demo</h1>
-      <BitmovinPlayer config={playerConfig} source={playerSource} />
-    </Fragment>
-  );
-}
-```
-
-Instead do one of the following:
-
-- Create a source object outside of the component (refer to the "Simple demo" above)
-- Use `useState` (refer to the "Dynamic source demo" above)
-- Use `useMemo`:
-
-```tsx
-export function MyComponent() {
-  const [_counter, setCounter] = useState(0);
-
-  // Ensure that the source object is created only once.
-  const playerSource: SourceConfig = useMemo(
-    () => ({
-      hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
-    }),
-    // Add dependencies here if needed to build the source object.
-    [],
-  );
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCounter((previousCounter) => previousCounter + 1);
-    }, 500);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-    <Fragment>
-      <h1>Right source usage demo</h1>
-      <BitmovinPlayer config={playerConfig} source={playerSource} />
-    </Fragment>
-  );
-}
-```
-
 # Attach event listeners
 
 ```tsx
@@ -320,6 +256,72 @@ export function MyComponent() {
         source={playerSource}
         config={playerConfig}
       />
+    </Fragment>
+  );
+}
+```
+
+# Possible pitfalls
+
+## Avoid source object recreation on every render
+
+```tsx
+export function MyComponent() {
+  const [_counter, setCounter] = useState(0);
+
+  // This will create a new source object on every render and the player will be reloaded unnecessarily.
+  const playerSource: SourceConfig = {
+    hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCounter((previousCounter) => previousCounter + 1);
+    }, 500);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+    <Fragment>
+      <h1>Wrong source usage demo</h1>
+      <BitmovinPlayer config={playerConfig} source={playerSource} />
+    </Fragment>
+  );
+}
+```
+
+Instead do one of the following:
+
+- Create a source object outside of the component (refer to the "Simple demo" above)
+- Use `useState` (refer to the "Dynamic source demo" above)
+- Use `useMemo`:
+
+```tsx
+export function MyComponent() {
+  const [_counter, setCounter] = useState(0);
+
+  // Ensure that the source object is created only once.
+  const playerSource: SourceConfig = useMemo(
+    () => ({
+      hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
+    }),
+    // Add dependencies here if needed to build the source object.
+    [],
+  );
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCounter((previousCounter) => previousCounter + 1);
+    }, 500);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+    <Fragment>
+      <h1>Right source usage demo</h1>
+      <BitmovinPlayer config={playerConfig} source={playerSource} />
     </Fragment>
   );
 }

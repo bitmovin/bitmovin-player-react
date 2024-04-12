@@ -1,26 +1,14 @@
-import { Player, PlayerAPI, PlayerConfig, SourceConfig } from "bitmovin-player";
-import { UIContainer, UIFactory, UIManager } from "bitmovin-player-ui";
-import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager";
-import {
-  ForwardedRef,
-  forwardRef,
-  MutableRefObject,
-  RefCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Player, PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
+import { UIContainer, UIFactory, UIManager } from 'bitmovin-player-ui';
+import { UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager';
+import { ForwardedRef, forwardRef, MutableRefObject, RefCallback, useEffect, useRef, useState } from 'react';
 
 interface BitmovinPlayerProps {
   config: PlayerConfig;
   source?: SourceConfig;
   className?: string;
-  playerRef?:
-    | MutableRefObject<PlayerAPI | null | undefined>
-    | RefCallback<PlayerAPI>;
-  ref?:
-    | MutableRefObject<HTMLDivElement | null | undefined>
-    | RefCallback<HTMLDivElement | null>;
+  playerRef?: MutableRefObject<PlayerAPI | null | undefined> | RefCallback<PlayerAPI>;
+  ref?: MutableRefObject<HTMLDivElement | null | undefined> | RefCallback<HTMLDivElement | null>;
   /**
    * - If the `config.ui` is `false` the UI is disabled.
    *
@@ -45,19 +33,11 @@ interface BitmovinPlayerProps {
 }
 
 export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
-  {
-    config,
-    source,
-    className,
-    playerRef: playerRefProp,
-    customUi,
-  }: BitmovinPlayerProps,
+  { config, source, className, playerRef: playerRefProp, customUi }: BitmovinPlayerProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const rootContainerElementRef = useRef<HTMLDivElement | null>(null);
-  const rootContainerElementRefHandler = (
-    rootContainerElement: HTMLDivElement | null,
-  ) => {
+  const rootContainerElementRefHandler = (rootContainerElement: HTMLDivElement | null) => {
     setRef(rootContainerElementRef, rootContainerElement);
 
     if (forwardedRef) {
@@ -84,15 +64,10 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       // the next mount hook is invoked before the previous destroy method is finished and the new player instance
       // messes up the old one. This workaround ensures that each player instance has its own container and video elements.
       // This should be improved in the future if possible.
-      const { createdPlayerContainerElement, createdVideoElement } =
-        preparePlayerElements(rootContainerElement);
+      const { createdPlayerContainerElement, createdVideoElement } = preparePlayerElements(rootContainerElement);
 
       const convertedConfig = convertConfig(config);
-      const initializedPlayer = initializePlayer(
-        createdPlayerContainerElement,
-        createdVideoElement,
-        convertedConfig,
-      );
+      const initializedPlayer = initializePlayer(createdPlayerContainerElement, createdVideoElement, convertedConfig);
 
       initializePlayerUi(initializedPlayer, config, customUi);
 
@@ -103,11 +78,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       setPlayer(initializedPlayer);
 
       return () => {
-        destroyPlayer(
-          initializedPlayer,
-          rootContainerElement,
-          createdPlayerContainerElement,
-        );
+        destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
       };
     },
     // Ignore the dependencies, as the effect should run only once (on mount).
@@ -132,8 +103,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       //
       // Apart from that, this check ensures that `player.unload` is not called unnecessarily on mount if the source is empty.
       // TODO do we actually care?
-      const shouldSkipUnload =
-        isInitialSourceEmptyRef.current && !isSourceChangedAtLeastOnce.current;
+      const shouldSkipUnload = isInitialSourceEmptyRef.current && !isSourceChangedAtLeastOnce.current;
 
       if (!shouldSkipUnload) {
         player.unload();
@@ -146,28 +116,24 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 });
 
 function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
-  if (typeof ref === "function") {
+  if (typeof ref === 'function') {
     ref(value);
   } else {
     ref.current = value;
   }
 }
 
-function initializePlayerUi(
-  player: PlayerAPI,
-  playerConfig: PlayerConfig,
-  customUi?: BitmovinPlayerProps["customUi"],
-) {
+function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, customUi?: BitmovinPlayerProps['customUi']) {
   if (playerConfig.ui === false) {
     return;
   }
 
   // If a custom UI container is provided, use it instead of the default UI.
-  if (customUi && "containerFactory" in customUi) {
+  if (customUi && 'containerFactory' in customUi) {
     new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
   // If custom UI variants are provided, use them instead of the default UI.
-  else if (customUi && "variantsFactory" in customUi) {
+  else if (customUi && 'variantsFactory' in customUi) {
     new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
   } else {
     UIFactory.buildDefaultUI(player);
@@ -200,8 +166,8 @@ function initializePlayer(
 }
 
 function preparePlayerElements(rootContainerElement: HTMLDivElement) {
-  const createdPlayerContainerElement = document.createElement("div");
-  const createdVideoElement = document.createElement("video");
+  const createdPlayerContainerElement = document.createElement('div');
+  const createdVideoElement = document.createElement('video');
 
   rootContainerElement.appendChild(createdPlayerContainerElement);
   createdPlayerContainerElement.appendChild(createdVideoElement);
@@ -217,13 +183,11 @@ function destroyPlayer(
   rootContainerElement: HTMLDivElement,
   playerContainerElement: HTMLDivElement,
 ) {
-  playerContainerElement.style.display = "none";
+  playerContainerElement.style.display = 'none';
 
   const removePlayerContainerElement = () => {
     rootContainerElement.removeChild(playerContainerElement);
   };
 
-  player
-    .destroy()
-    .then(removePlayerContainerElement, removePlayerContainerElement);
+  player.destroy().then(removePlayerContainerElement, removePlayerContainerElement);
 }

@@ -1,1 +1,1 @@
-export * from "./BitmovinPlayer.js";
+export * from './BitmovinPlayer.js';

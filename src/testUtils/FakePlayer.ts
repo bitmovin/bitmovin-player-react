@@ -1,47 +1,46 @@
 // Use types from `PlayerModule`.
-import * as PlayerModule from "bitmovin-player";
+import * as PlayerModule from 'bitmovin-player';
 // Import explicitly since this is not available in the DOM environment globally.
-import { setImmediate } from "timers";
+import { setImmediate } from 'timers';
 
 // Use values from `playerExports`.
-const { Player: _Player, ...playerExports } =
-  jest.requireActual<typeof PlayerModule>("bitmovin-player");
+const { Player: _Player, ...playerExports } = jest.requireActual<typeof PlayerModule>('bitmovin-player');
 
 export class FakePlayer
   // All these methods are used by components in the tests (e.g. by the UI components).
   implements
     Pick<
       PlayerModule.PlayerAPI,
-      | "on"
-      | "load"
-      | "getSource"
-      | "unload"
-      | "getVideoElement"
-      | "setVideoElement"
-      | "getVolume"
-      | "exports"
-      | "getContainer"
-      | "getViewMode"
-      | "isPlaying"
-      | "isStalled"
-      | "isCasting"
-      | "isLive"
-      | "getConfig"
-      | "getAvailableAudio"
-      | "getAudio"
-      | "getDuration"
-      | "getCurrentTime"
-      | "getSeekableRange"
-      | "getVideoBufferLength"
-      | "getAudioBufferLength"
-      | "isPaused"
-      | "isMuted"
-      | "isViewModeAvailable"
-      | "isCastAvailable"
-      | "destroy"
+      | 'on'
+      | 'load'
+      | 'getSource'
+      | 'unload'
+      | 'getVideoElement'
+      | 'setVideoElement'
+      | 'getVolume'
+      | 'exports'
+      | 'getContainer'
+      | 'getViewMode'
+      | 'isPlaying'
+      | 'isStalled'
+      | 'isCasting'
+      | 'isLive'
+      | 'getConfig'
+      | 'getAvailableAudio'
+      | 'getAudio'
+      | 'getDuration'
+      | 'getCurrentTime'
+      | 'getSeekableRange'
+      | 'getVideoBufferLength'
+      | 'getAudioBufferLength'
+      | 'isPaused'
+      | 'isMuted'
+      | 'isViewModeAvailable'
+      | 'isCastAvailable'
+      | 'destroy'
     >
 {
-  public static readonly containerClassName = "fakebitmovinplayer-container";
+  public static readonly containerClassName = 'fakebitmovinplayer-container';
 
   private videoElement?: HTMLVideoElement;
 
@@ -85,7 +84,7 @@ export class FakePlayer
 
   getVideoElement() {
     if (!this.videoElement) {
-      throw new Error("Video element is not set");
+      throw new Error('Video element is not set');
     }
 
     return this.videoElement;
@@ -177,5 +176,5 @@ export class FakePlayer
  * been processed. This works by putting a callback onto the event queue and resolving afterwards.
  */
 export function processPromiseQueue() {
-  return new Promise((resolve) => setImmediate(resolve));
+  return new Promise(resolve => setImmediate(resolve));
 }

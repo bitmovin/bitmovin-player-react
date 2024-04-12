@@ -1,28 +1,28 @@
-import { FakePlayer } from "./testUtils/FakePlayer.js";
+import { FakePlayer } from './testUtils/FakePlayer.js';
 
-jest.mock("bitmovin-player", () => {
+jest.mock('bitmovin-player', () => {
   return {
-    ...jest.requireActual("bitmovin-player"),
+    ...jest.requireActual('bitmovin-player'),
     Player: FakePlayer,
   };
 });
 
-import { render, waitFor } from "@testing-library/react";
-import { PlayerAPI, PlayerConfig, SourceConfig } from "bitmovin-player";
-import { PlaybackToggleOverlay, UIContainer } from "bitmovin-player-ui";
-import { UIVariant } from "bitmovin-player-ui/dist/js/framework/uimanager.js";
-import { MutableRefObject, RefCallback, StrictMode } from "react";
+import { render, waitFor } from '@testing-library/react';
+import { PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
+import { PlaybackToggleOverlay, UIContainer } from 'bitmovin-player-ui';
+import { UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager.js';
+import { MutableRefObject, RefCallback, StrictMode } from 'react';
 
-import { BitmovinPlayer } from "./BitmovinPlayer.js";
-import { expectNeverOccurs } from "./testUtils/expectNeverOccurs.js";
-import { queries } from "./testUtils/queries.js";
+import { BitmovinPlayer } from './BitmovinPlayer.js';
+import { expectNeverOccurs } from './testUtils/expectNeverOccurs.js';
+import { queries } from './testUtils/queries.js';
 
 const playerConfig: PlayerConfig = {
-  key: "<key>",
+  key: '<key>',
 };
 
 const playerSource: SourceConfig = {
-  hls: "https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8",
+  hls: 'https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8',
 };
 
 beforeEach(() => {
@@ -30,23 +30,18 @@ beforeEach(() => {
 });
 
 describe(BitmovinPlayer.name, () => {
-  it("should render the player", async () => {
-    const { getBySelector, getAllBySelector } = render(
-      <BitmovinPlayer config={playerConfig} />,
-      {
-        queries,
-      },
-    );
+  it('should render the player', async () => {
+    const { getBySelector, getAllBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
+      queries,
+    });
 
-    expect(getAllBySelector("video")).toHaveLength(1);
-    expect(getBySelector("video")).toBeInTheDocument();
-    expect(
-      getBySelector(`.${FakePlayer.containerClassName}`),
-    ).toBeInTheDocument();
+    expect(getAllBySelector('video')).toHaveLength(1);
+    expect(getBySelector('video')).toBeInTheDocument();
+    expect(getBySelector(`.${FakePlayer.containerClassName}`)).toBeInTheDocument();
   });
 
-  it("should load the source initially", async () => {
-    jest.spyOn(FakePlayer.prototype, "load");
+  it('should load the source initially', async () => {
+    jest.spyOn(FakePlayer.prototype, 'load');
 
     render(<BitmovinPlayer config={playerConfig} source={playerSource} />);
 
@@ -55,13 +50,11 @@ describe(BitmovinPlayer.name, () => {
     });
   });
 
-  it("should unload the source", async () => {
-    jest.spyOn(FakePlayer.prototype, "load");
-    jest.spyOn(FakePlayer.prototype, "unload");
+  it('should unload the source', async () => {
+    jest.spyOn(FakePlayer.prototype, 'load');
+    jest.spyOn(FakePlayer.prototype, 'unload');
 
-    const { rerender } = render(
-      <BitmovinPlayer config={playerConfig} source={playerSource} />,
-    );
+    const { rerender } = render(<BitmovinPlayer config={playerConfig} source={playerSource} />);
 
     rerender(<BitmovinPlayer config={playerConfig} source={undefined} />);
 
@@ -72,7 +65,7 @@ describe(BitmovinPlayer.name, () => {
   });
 
   it("should not unload the source if it's empty initially", async () => {
-    jest.spyOn(FakePlayer.prototype, "unload");
+    jest.spyOn(FakePlayer.prototype, 'unload');
 
     render(<BitmovinPlayer config={playerConfig} />);
 
@@ -81,8 +74,8 @@ describe(BitmovinPlayer.name, () => {
     });
   });
 
-  it("should destroy the player", () => {
-    jest.spyOn(FakePlayer.prototype, "destroy");
+  it('should destroy the player', () => {
+    jest.spyOn(FakePlayer.prototype, 'destroy');
 
     const { unmount } = render(<BitmovinPlayer config={playerConfig} />);
 
@@ -91,32 +84,29 @@ describe(BitmovinPlayer.name, () => {
     expect(FakePlayer.prototype.destroy).toHaveBeenCalled();
   });
 
-  describe("UI", () => {
+  describe('UI', () => {
     // Some default UI elements, not the full list.
     const defaultUiElementSelectors = [
-      ".bmpui-ui-subtitle-overlay",
-      ".bmpui-ui-buffering-overlay",
-      ".bmpui-ui-cast-status-overlay",
-      ".bmpui-ui-controlbar",
-      ".bmpui-ui-titlebar",
-      ".bmpui-ui-recommendation-overlay",
-      ".bmpui-ui-watermark",
+      '.bmpui-ui-subtitle-overlay',
+      '.bmpui-ui-buffering-overlay',
+      '.bmpui-ui-cast-status-overlay',
+      '.bmpui-ui-controlbar',
+      '.bmpui-ui-titlebar',
+      '.bmpui-ui-recommendation-overlay',
+      '.bmpui-ui-watermark',
     ];
 
-    it("should initialize the default UI", async () => {
-      const { getBySelector } = render(
-        <BitmovinPlayer config={playerConfig} />,
-        {
-          queries,
-        },
-      );
+    it('should initialize the default UI', async () => {
+      const { getBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
+        queries,
+      });
 
-      defaultUiElementSelectors.forEach((selector) => {
+      defaultUiElementSelectors.forEach(selector => {
         expect(getBySelector(selector)).toBeInTheDocument();
       });
     });
 
-    it("should initialize the UI using the `UIContainer`", () => {
+    it('should initialize the UI using the `UIContainer`', () => {
       const uiContainerFactory = () =>
         new UIContainer({
           components: [new PlaybackToggleOverlay()],
@@ -134,22 +124,20 @@ describe(BitmovinPlayer.name, () => {
         },
       );
 
-      expect(
-        getBySelector(".bmpui-ui-hugeplaybacktogglebutton"),
-      ).toBeInTheDocument();
+      expect(getBySelector('.bmpui-ui-hugeplaybacktogglebutton')).toBeInTheDocument();
 
-      defaultUiElementSelectors.forEach((selector) => {
+      defaultUiElementSelectors.forEach(selector => {
         expect(getBySelector(selector)).not.toBeInTheDocument();
       });
     });
 
-    it("should initialize the UI using the `UIVariant[]`", () => {
+    it('should initialize the UI using the `UIVariant[]`', () => {
       const uiVariantsFactory = (): UIVariant[] => [
         {
           ui: new UIContainer({
             components: [new PlaybackToggleOverlay()],
           }),
-          condition: (context) => !context.isFullscreen,
+          condition: context => !context.isFullscreen,
         },
       ];
 
@@ -165,16 +153,14 @@ describe(BitmovinPlayer.name, () => {
         },
       );
 
-      expect(
-        getBySelector(".bmpui-ui-hugeplaybacktogglebutton"),
-      ).toBeInTheDocument();
+      expect(getBySelector('.bmpui-ui-hugeplaybacktogglebutton')).toBeInTheDocument();
 
-      defaultUiElementSelectors.forEach((selector) => {
+      defaultUiElementSelectors.forEach(selector => {
         expect(getBySelector(selector)).not.toBeInTheDocument();
       });
     });
 
-    it("should not initialize any UI", () => {
+    it('should not initialize any UI', () => {
       const { getBySelector } = render(
         <BitmovinPlayer
           config={{
@@ -187,14 +173,14 @@ describe(BitmovinPlayer.name, () => {
         },
       );
 
-      defaultUiElementSelectors.forEach((selector) => {
+      defaultUiElementSelectors.forEach(selector => {
         expect(getBySelector(selector)).not.toBeInTheDocument();
       });
     });
   });
 
-  describe("Ref", () => {
-    it("should initialize the ref", () => {
+  describe('Ref', () => {
+    it('should initialize the ref', () => {
       const ref: MutableRefObject<HTMLDivElement | null> = {
         current: null,
       };
@@ -204,7 +190,7 @@ describe(BitmovinPlayer.name, () => {
       expect(ref.current).toBeInstanceOf(HTMLDivElement);
     });
 
-    it("should call the ref callback", () => {
+    it('should call the ref callback', () => {
       const refCallback: RefCallback<HTMLDivElement> = jest.fn();
 
       render(<BitmovinPlayer config={playerConfig} ref={refCallback} />);
@@ -212,7 +198,7 @@ describe(BitmovinPlayer.name, () => {
       expect(refCallback).toHaveBeenCalledWith(expect.any(HTMLDivElement));
     });
 
-    it("should initialize the player ref", () => {
+    it('should initialize the player ref', () => {
       const playerRef: MutableRefObject<PlayerAPI | undefined> = {
         current: undefined,
       };
@@ -222,12 +208,10 @@ describe(BitmovinPlayer.name, () => {
       expect(playerRef.current).toBeInstanceOf(FakePlayer);
     });
 
-    it("should call the player ref callback", () => {
+    it('should call the player ref callback', () => {
       const playerRefCallback: RefCallback<PlayerAPI> = jest.fn();
 
-      render(
-        <BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />,
-      );
+      render(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
 
       expect(playerRefCallback).toHaveBeenCalledWith(expect.any(FakePlayer));
     });
@@ -238,9 +222,9 @@ describe(BitmovinPlayer.name, () => {
    * The biggest challenge for us is that the mount hook is invoked twice (player initialized twice)
    * and that the player destroy method is async.
    */
-  describe("Strict mode", () => {
-    it("should eventually render only one player in the strict mode", async () => {
-      jest.spyOn(FakePlayer.prototype, "destroy");
+  describe('Strict mode', () => {
+    it('should eventually render only one player in the strict mode', async () => {
+      jest.spyOn(FakePlayer.prototype, 'destroy');
 
       const { getBySelector, getAllBySelector } = render(
         <StrictMode>
@@ -251,17 +235,13 @@ describe(BitmovinPlayer.name, () => {
         },
       );
 
-      const playerContainerElementsBefore = getAllBySelector(
-        `.${FakePlayer.containerClassName}`,
-      );
-      const videoElementsBefore = getAllBySelector("video");
+      const playerContainerElementsBefore = getAllBySelector(`.${FakePlayer.containerClassName}`);
+      const videoElementsBefore = getAllBySelector('video');
 
       await FakePlayer.ensureLatestDestroyFinished();
 
-      const videoElementsAfter = getAllBySelector("video");
-      const playerContainerElementsAfter = getAllBySelector(
-        `.${FakePlayer.containerClassName}`,
-      );
+      const videoElementsAfter = getAllBySelector('video');
+      const playerContainerElementsAfter = getAllBySelector(`.${FakePlayer.containerClassName}`);
 
       // The player is initialized twice in strict mode because the mount hook is invoked twice.
       // Since the destroy method is async, there can be two container and video elements before the first player is destroyed.
@@ -270,12 +250,12 @@ describe(BitmovinPlayer.name, () => {
       // After the first player is destroyed, there should be only one container and video element.
       expect(playerContainerElementsAfter).toHaveLength(1);
       expect(videoElementsAfter).toHaveLength(1);
-      expect(getBySelector("video")).toBeInTheDocument();
+      expect(getBySelector('video')).toBeInTheDocument();
       expect(FakePlayer.prototype.destroy).toHaveBeenCalledTimes(1);
     });
 
     it("should not unload the source if it's empty initially", async () => {
-      jest.spyOn(FakePlayer.prototype, "unload");
+      jest.spyOn(FakePlayer.prototype, 'unload');
 
       render(
         <StrictMode>
