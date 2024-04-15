@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Publish the package to NPM registry.
+# Publishes the package to the NPM registry.
 # Uses the latest GIT tag as the package version, the GIT tag should be in the format `1.0.0` or `1.0.0-beta.0`.
+#
 # Expected environment variables:
 # - NPM_PUBLISH_TOKEN: [REQUIRED] The NPM access token to publish the package.
 # - DRY_RUN: [OPTIONAL] If set to `true`, the package is not published to the NPM registry (the command is executed as a dry run).
@@ -19,7 +20,7 @@ fi
 
 # Check if we are on the main branch.
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
-    echo "You must be on the main branch to publish to NPM"
+    echo "You must be on the main branch to publish to the NPM registry."
     exit 1
 fi
 
