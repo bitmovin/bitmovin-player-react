@@ -8,7 +8,7 @@ if [ -z "$NPM_PUBLISH_TOKEN" ]; then
 fi
 
 if ! [ -f ./package.json ]; then
-  echo "Cannot find package.json file. Execute the command from the root of the project."
+  echo "Cannot find package.json file. Execute the command from the root of the package."
   exit 1
 fi
 
