@@ -39,7 +39,7 @@ jobs:
         uses: ./.github/actions/installDependencies
 
       - name: Jest
-        run: npm run test:ci
+        run: npm run test
 
   code-style:
     name: Code format check
