@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dryRun=true
+dryRun=false
 
 if [ -z "$NPM_PUBLISH_TOKEN" ]; then
   echo "NPM_PUBLISH_TOKEN is missing"
