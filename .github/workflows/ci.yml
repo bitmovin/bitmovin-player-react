@@ -35,14 +35,11 @@ jobs:
         with:
           ref: ${{ inputs.github-ref || github.sha }}
 
-      - name: Install Node.JS
-        uses: ./.github/actions/installNode
-
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
 
       - name: Jest
-        run: npm run test:ci
+        run: npm run test
 
   code-style:
     name: Code format check
@@ -54,9 +51,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ inputs.github-ref || github.sha }}
-
-      - name: Install Node.JS
-        uses: ./.github/actions/installNode
 
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
@@ -74,9 +68,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ inputs.github-ref || github.sha }}
-
-      - name: Install Node.JS
-        uses: ./.github/actions/installNode
 
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
