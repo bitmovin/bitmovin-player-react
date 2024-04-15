@@ -20,9 +20,6 @@ jobs:
         with:
           ref: ${{ inputs.github-ref || github.sha }}
 
-      - name: Install Node.JS
-        uses: ./.github/actions/installNode
-
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
 
