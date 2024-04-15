@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
 
-      - name: Jest
+      - name: Test
         run: npm run test
 
   code-style:
