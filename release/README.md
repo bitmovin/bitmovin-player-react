@@ -8,4 +8,4 @@
 - Commit with a message with the content `Release <X.Y.Z>` and push to the `main` branch
 - Create a new tag with the release version (`git tag <X.Y.Z> main`)
 - Push the new tag to the repository (`git push origin <X.Y.Z>`)
-- Release the package on NPM using the Release GH action
+- Publish the package to NPM using the Release GH action
