@@ -3,8 +3,8 @@
 nonInteractive=false
 dryRun=true
 
-if [ -z "$NPM_RELEASE_TOKEN" ]; then
-    read -s -p "Enter your NPM access token: " NPM_RELEASE_TOKEN
+if [ -z "$NPM_PUBLISH_TOKEN" ]; then
+    read -s -p "Enter your NPM access token: " NPM_PUBLISH_TOKEN
     echo
 fi
 
@@ -29,7 +29,7 @@ fi
 npm config set registry https://registry.npmjs.org
 
 # Log in to the NPM registry using the access token.
-echo "//registry.npmjs.org/:_authToken=${NPM_RELEASE_TOKEN}" >> ~/.npmrc
+echo "//registry.npmjs.org/:_authToken=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
 npm whoami || npm login
 
 npm publish --dry-run="$dryRun"
