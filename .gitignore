@@ -7,3 +7,5 @@ coverage
 *.orig
 *.DS_Store
 npm-debug.log*
+
+release/.npmrc

@@ -35,6 +35,21 @@ if [ "$DRY_RUN" = true ]; then
   echo "!!!! DRY RUN MODE !!!!"
 fi
 
+# Check if we are on the main branch.
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
+    echo "You must be on the main branch to publish to the NPM registry."
+    exit 1
+fi
+
+echo "Verifying NPM credentials"
+
+npm config set registry https://registry.npmjs.org
+
+# Set the NPM token and check if the token is valid.
+export NPM_CONFIG_USERCONFIG="$PWD/release/.npmrc"
+echo "//registry.npmjs.org/:_authToken=${NPM_PUBLISH_TOKEN}" > ./release/.npmrc
+npm whoami || exit 1
+
 if [ "$SKIP_CHANGELOG_UPDATE" != true ]; then
   echo "Updating the CHANGELOG.md file"
 
@@ -47,26 +62,15 @@ if [ "$SKIP_CHANGELOG_UPDATE" != true ]; then
   git add ./CHANGELOG.md
 fi
 
-# Check if we are on the main branch.
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
-    echo "You must be on the main branch to publish to the NPM registry."
-    exit 1
-fi
-
 echo "Updating the version and committing the changes"
 
 # Updates the package.json, pacakge-lock.json, files, commits the changes, and creates a new GIT tag.
 # Use `--force` to allow CHANGELOG.md changes to be committed as well.
-npm version "$VERSION" --force
-npm config set registry https://registry.npmjs.org
-
-# Log in to the NPM registry using the access token.
-echo "//registry.npmjs.org/:_authToken=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
-npm whoami || npm login
+npm version "$VERSION" --force || exit 1
 
 echo "Publishing the package to the NPM registry"
 
-npm publish --dry-run="$DRY_RUN"
+npm publish --dry-run="$DRY_RUN" || exit 1
 
 if [ "$DRY_RUN" != true ]; then
   echo "Pushing the changes to the remote repository"
