@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial React wrapper implementation
 - CI workflow
 - Release workflow
+- Skip CHANGELOG update option to the release workflow
+
+### Changed
+
 - Improve `UIVariant` imports
 - Include React 18 in peer dependencies
-- Skip CHANGELOG update option to the release action
+- Safe NPM login in the release workflow
