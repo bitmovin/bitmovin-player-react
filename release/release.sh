@@ -6,7 +6,9 @@
 #   - NPM_PUBLISH_TOKEN: [REQUIRED] The NPM access token to publish the package.
 #   - VERSION: [REQUIRED] The version of the package to publish.
 #   - DRY_RUN: [OPTIONAL] If set to `true`, the package is not published to the NPM registry,
-#     the commit and git tag are not pushed to the remote repository (the command is executed as a dry run).
+#     the commit and GIT tag are not pushed to the remote repository (the command is executed as a dry run).
+
+echo "Releasing the package to the NPM registry"
 
 if [ -z "$NPM_PUBLISH_TOKEN" ]; then
   echo "NPM_PUBLISH_TOKEN is missing"
@@ -32,6 +34,8 @@ if [ "$DRY_RUN" = true ] ; then
   echo "!!!! DRY RUN MODE !!!!"
 fi
 
+echo "Updating the CHANGELOG.md file"
+
 # Remove the current released header.
 sed -i '' '/# Release/{N;d;}' CHANGELOG.md
 
@@ -48,6 +52,8 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
     exit 1
 fi
 
+echo "Updating the version and committing the changes"
+
 # Updates the package.json, pacakge-lock.json, files, commits the changes, and creates a new GIT tag.
 npm version "$VERSION" -f
 npm config set registry https://registry.npmjs.org
@@ -56,7 +62,11 @@ npm config set registry https://registry.npmjs.org
 echo "//registry.npmjs.org/:_authToken=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
 npm whoami || npm login
 
+echo "Publishing the package to the NPM registry"
+
 npm publish --dry-run="$DRY_RUN"
+
+echo "Pushing the changes to the remote repository"
 
 if [ "$DRY_RUN" != true ] ; then
   git push --follow-tags
