@@ -26,6 +26,11 @@ jobs:
         with:
           ref: ${{ inputs.github-ref || github.sha }}
 
+      - name: Configure GIT identity
+        run: |
+          git config --global user.email "bitdevops@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+
       - name: Install dependencies
         uses: ./.github/actions/installDependencies
 
