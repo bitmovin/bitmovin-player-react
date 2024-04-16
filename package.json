@@ -27,8 +27,7 @@
     "build": "rm -fr dist/* && tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json && ./addPackageType.sh",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest",
-    "test:ci": "jest --collectCoverageFrom '<rootDir>/src/**/*.{ts,tsx}'"
+    "test": "jest"
   },
   "peerDependencies": {
     "bitmovin-player": ">=8.0.0",

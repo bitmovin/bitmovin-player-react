@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      github-ref:
+        required: true
+        type: string
+        default: 'main'
+        description: Ref to build
+  workflow_call:
+    inputs:
+      github-ref:
+        required: true
+        type: string
+        description: Ref to build
+
+concurrency:
+  # Cancel concurrent jobs only for workflows triggered by a `pull_request`, otherwise force the group to be unique
+  # `head_ref` is only defined for `pull_request` events.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.github-ref || github.sha }}
+
+      - name: Install dependencies
+        uses: ./.github/actions/installDependencies
+
+      - name: Test
+        run: npm run test
+
+  code-style:
+    name: Code format check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.github-ref || github.sha }}
+
+      - name: Install dependencies
+        uses: ./.github/actions/installDependencies
+
+      - name: Linting
+        run: npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.github-ref || github.sha }}
+
+      - name: Install dependencies
+        uses: ./.github/actions/installDependencies
+
+      - name: Build
+        run: npm run build
