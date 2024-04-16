@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "rm -fr dist/* && tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json && ./build/addPackageType.sh",
+    "release": "./release/release.sh",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest"
