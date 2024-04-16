@@ -7,6 +7,7 @@
 #   - VERSION: [REQUIRED] The version of the package to publish.
 #   - DRY_RUN: [OPTIONAL] If set to `true`, the package is not published to the NPM registry,
 #     the commit and GIT tag are not pushed to the remote repository (the command is executed as a dry run).
+#   - SKIP_CHANGELOG_UPDATE: [OPTIONAL] If set to `true`, the CHANGELOG.md file is not updated.
 
 echo "Releasing the package to the NPM registry"
 
@@ -30,19 +31,21 @@ if [ "$(git status -s)" ]; then
   exit 1
 fi
 
-if [ "$DRY_RUN" = true ] ; then
+if [ "$DRY_RUN" = true ]; then
   echo "!!!! DRY RUN MODE !!!!"
 fi
 
-echo "Updating the CHANGELOG.md file"
+if [ "$SKIP_CHANGELOG_UPDATE" != true ]; then
+  echo "Updating the CHANGELOG.md file"
 
-currentDate=$(date '+%Y-%m-%d')
-newReleasedContent="## [Unreleased]\n\n## ${VERSION} - ${currentDate}"
-# Replace the current unreleased header with the new released header followed by the new version content.
-sed "s/## \[Unreleased\]/${newReleasedContent}/" ./CHANGELOG.md > CHANGELOG.tmp.md
-mv -f CHANGELOG.tmp.md CHANGELOG.md
+  currentDate=$(date '+%Y-%m-%d')
+  newReleasedContent="## [Unreleased]\n\n## ${VERSION} - ${currentDate}"
+  # Replace the current unreleased header with the new released header followed by the new version content.
+  sed "s/## \[Unreleased\]/${newReleasedContent}/" ./CHANGELOG.md > CHANGELOG.tmp.md
+  mv -f CHANGELOG.tmp.md CHANGELOG.md
 
-git add ./CHANGELOG.md
+  git add ./CHANGELOG.md
+fi
 
 # Check if we are on the main branch.
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
@@ -65,7 +68,7 @@ echo "Publishing the package to the NPM registry"
 
 npm publish --dry-run="$DRY_RUN"
 
-if [ "$DRY_RUN" != true ] ; then
+if [ "$DRY_RUN" != true ]; then
   echo "Pushing the changes to the remote repository"
   git push --follow-tags
 fi
