@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Publishes the package to the NPM registry.
-# Uses the latest GIT tag as the package version, the GIT tag should be in the format `1.0.0` or `1.0.0-beta.0`.
+# Uses the latest GIT tag as the package version, the GIT tag should be in the format `1.0.0` or `1.0.0-beta.1`.
 #
 # Expected environment variables:
 # - NPM_PUBLISH_TOKEN: [REQUIRED] The NPM access token to publish the package.
