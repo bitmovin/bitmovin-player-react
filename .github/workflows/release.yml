@@ -9,6 +9,10 @@ on:
         type: string
         default: 'main'
         description: Ref to build
+      version:
+        required: true
+        type: string
+        description: Version to release
       dry-run:
           type: boolean
 
@@ -31,5 +35,6 @@ jobs:
       - name: Release to NPM
         run: ./release/release.sh
         env:
+          VERSION: ${{ inputs.version }}
           NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           DRY_RUN: ${{ inputs.dry-run }}
