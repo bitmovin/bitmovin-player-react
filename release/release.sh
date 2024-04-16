@@ -55,7 +55,8 @@ fi
 echo "Updating the version and committing the changes"
 
 # Updates the package.json, pacakge-lock.json, files, commits the changes, and creates a new GIT tag.
-npm version "$VERSION" -f
+# Use `--force` to allow CHANGELOG.md changes to be committed as well.
+npm version "$VERSION" --force
 npm config set registry https://registry.npmjs.org
 
 # Log in to the NPM registry using the access token.
