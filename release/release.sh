@@ -18,6 +18,16 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
+if ! [ -f ./package.json ]; then
+  echo "Cannot find package.json file. Execute the command from the root of the package."
+  exit 1
+fi
+
+if [ "$(git status -s)" ]; then
+  echo "Uncommited changes detected. Please commit your changes before publishing the package."
+  exit 1
+fi
+
 if [ "$DRY_RUN" = true ] ; then
   echo "!!!! DRY RUN MODE !!!!"
 fi
@@ -30,6 +40,7 @@ newReleasedContent="## Unreleased\n\n# Released\n\n## ${VERSION} - ${currentDate
 # Replace the current unreleased header with the new released header followed by the new version content.
 sed -i '' "s/## Unreleased/${newReleasedContent}/" CHANGELOG.md
 
+git add ./CHANGELOG.md
 
 # Check if we are on the main branch.
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
@@ -38,7 +49,7 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
 fi
 
 # Updates the package.json, pacakge-lock.json, files, commits the changes, and creates a new GIT tag.
-npm version "$VERSION"
+npm version "$VERSION" -f
 npm config set registry https://registry.npmjs.org
 
 # Log in to the NPM registry using the access token.
