@@ -49,7 +49,7 @@ npm config set registry https://registry.npmjs.org
 
 # Set the NPM token and check if the token is valid.
 export NPM_CONFIG_USERCONFIG="$PWD/release/.npmrc"
-# echo "//registry.npmjs.org/:_authToken=${NPM_PUBLISH_TOKEN}" > ./release/.npmrc
+echo "//registry.npmjs.org/:_authToken=${NPM_PUBLISH_TOKEN}" > ./release/.npmrc
 npm whoami
 
 if [ "$SKIP_CHANGELOG_UPDATE" != true ]; then
