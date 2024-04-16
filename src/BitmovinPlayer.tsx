@@ -1,6 +1,5 @@
 import { Player, PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
-import { UIContainer, UIFactory, UIManager } from 'bitmovin-player-ui';
-import { UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager';
+import { UIContainer, UIFactory, UIManager, UIVariant } from 'bitmovin-player-ui';
 import { ForwardedRef, forwardRef, MutableRefObject, RefCallback, useEffect, useRef, useState } from 'react';
 
 interface BitmovinPlayerProps {
