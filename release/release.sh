@@ -65,8 +65,7 @@ echo "Publishing the package to the NPM registry"
 
 npm publish --dry-run="$DRY_RUN"
 
-echo "Pushing the changes to the remote repository"
-
 if [ "$DRY_RUN" != true ] ; then
+  echo "Pushing the changes to the remote repository"
   git push --follow-tags
 fi
