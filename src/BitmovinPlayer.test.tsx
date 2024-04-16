@@ -29,7 +29,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe(BitmovinPlayer.name, () => {
+describe('BitmovinPlayer', () => {
   it('should render the player', async () => {
     const { getBySelector, getAllBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
       queries,
