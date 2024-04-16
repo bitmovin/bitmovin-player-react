@@ -39,7 +39,7 @@ echo "Updating the CHANGELOG.md file"
 currentDate=$(date '+%Y-%m-%d')
 newReleasedContent="## [Unreleased]\n\n## ${VERSION} - ${currentDate}"
 # Replace the current unreleased header with the new released header followed by the new version content.
-sed -i '' "s/## \[Unreleased\]/${newReleasedContent}/" CHANGELOG.md
+sed -i '' "s/## \[Unreleased\]/${newReleasedContent}/" ./CHANGELOG.md
 
 git add ./CHANGELOG.md
 
