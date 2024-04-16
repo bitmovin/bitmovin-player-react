@@ -18,7 +18,7 @@ on:
         description: Dry run
       skip-changelog-update:
         type: boolean
-        description: Skip changelog update
+        description: Skip CHANGELOG update
 
 jobs:
   release:
