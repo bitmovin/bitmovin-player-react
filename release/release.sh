@@ -4,8 +4,8 @@
 # Uses the latest GIT tag as the package version, the GIT tag should be in the format `1.0.0` or `1.0.0-beta.1`.
 #
 # Expected environment variables:
-# - NPM_PUBLISH_TOKEN: [REQUIRED] The NPM access token to publish the package.
-# - DRY_RUN: [OPTIONAL] If set to `true`, the package is not published to the NPM registry (the command is executed as a dry run).
+#   - NPM_PUBLISH_TOKEN: [REQUIRED] The NPM access token to publish the package.
+#   - DRY_RUN: [OPTIONAL] If set to `true`, the package is not published to the NPM registry (the command is executed as a dry run).
 
 if [ -z "$NPM_PUBLISH_TOKEN" ]; then
   echo "NPM_PUBLISH_TOKEN is missing"
