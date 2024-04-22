@@ -26,10 +26,12 @@
   "scripts": {
     "build": "rm -fr dist/* && tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json && ./build/addPackageType.sh",
     "release": "./release/release.sh",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"example/src/**/*.{ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
-    "prepare": "husky"
+    "prepare": "husky",
+    "bootstrap": "npm ci && npm run build && npm ci --prefix ./example",
+    "start:dev": "concurrently --kill-others \"tsc -p tsconfig.build.esm.json -w\" \"npm run start:dev --prefix ./example\""
   },
   "peerDependencies": {
     "bitmovin-player": "^8.0.0",
@@ -44,6 +46,7 @@
     "@types/react-dom": "^18.2.24",
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.6.0",
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",

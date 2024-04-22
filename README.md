@@ -1,6 +1,16 @@
-# Bitmovin player React wrapper
+# Bitmovin Player React
 
-# Getting started
+This is an open-source project created to enable customers to integrate the Bitmovin Player into React projects. It has been created to provide customers with a starting point, which can be built upon through active collaboration and contributions. We look forward to seeing this library expand and grow.
+
+[![CI](https://github.com/bitmovin/bitmovin-player-react/actions/workflows/ci.yml/badge.svg)](https://github.com/bitmovin/bitmovin-player-react/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+[![Bitmovin Community](https://img.shields.io/discourse/users?label=community&server=https%3A%2F%2Fcommunity.bitmovin.com)](https://community.bitmovin.com/?utm_source=github&utm_medium=bitmovin-player-react&utm_campaign=dev-community)
+[![npm version](https://img.shields.io/npm/v/bitmovin-player-react)](https://www.npmjs.com/package/bitmovin-player-react)
+[![npm dm](https://img.shields.io/npm/dm/bitmovin-player-react.svg)](https://www.npmjs.com/package/bitmovin-player-react)
+[![npm dt](https://img.shields.io/npm/dt/bitmovin-player-react.svg)](https://www.npmjs.com/package/bitmovin-player-react)
+
+
+# Getting Started
 
 1. `npm i bitmovin-player-react bitmovin-player bitmovin-player-ui --save`
 2. Add `import "bitmovin-player-ui/dist/css/bitmovinplayer-ui.css";` to your entry point file
@@ -33,8 +43,9 @@ export function MyComponent() {
 }
 ```
 
+# Documentation
 
-# Dynamically update player source config
+## Dynamically update player source config
 
 `BitmovinPlayer` keeps track of the source config and reloads the player when the source config changes:
 
@@ -76,7 +87,7 @@ export function MyComponent() {
 }
 ```
 
-# Attach event listeners
+## Attach event listeners
 
 ```tsx
 import { PlayerConfig, PlayerEvent } from "bitmovin-player";
@@ -104,7 +115,7 @@ export function MyComponent() {
 }
 ```
 
-# Get player instance
+## Get player instance
 
 ```tsx
 import { PlayerAPI } from "bitmovin-player";
@@ -127,9 +138,9 @@ export function MyComponent() {
 }
 ```
 
-# Customize player UI
+## Customize player UI
 
-## Use UI container
+### Use UI container
 
 You can use `UIContainer` from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
@@ -158,7 +169,7 @@ export function MyComponent() {
 }
 ```
 
-## Use UI variants
+### Use UI variants
 
 You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
@@ -203,7 +214,7 @@ export function MyComponent() {
 }
 ```
 
-## Use custom CSS
+### Use custom CSS
 
 You either can implement your own CSS for the default player UI or build on top of `bitmovin-player-ui/dist/css/bitmovinplayer-ui.css`.
 
@@ -233,7 +244,7 @@ export function MyComponent() {
 
 ```
 
-## Disable UI
+### Disable UI
 
 ```tsx
 import { PlayerConfig } from "bitmovin-player";
@@ -261,9 +272,9 @@ export function MyComponent() {
 }
 ```
 
-# Possible pitfalls
+## Possible pitfalls
 
-## Avoid source object recreation on every render
+### Avoid source object recreation on every render
 
 ```tsx
 export function MyComponent() {
@@ -326,3 +337,26 @@ export function MyComponent() {
   );
 }
 ```
+# Maintenance and Updates
+
+As an open source project, this library is not part of a regular maintenance or update schedule and is updated on an adhoc basis when contributions are made.
+
+# Contributing to this project
+
+We are pleased to accept changes, updates and fixes from the community wishing to use and expand this project. Bitmovin will review any Pull Requests made. We do our best to provide timely feedback, but please note that no SLAs apply. New releases are tagged and published on our discretion. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on how to contribute.
+
+## Raising a Feature Suggestion
+
+If you see something missing that might be useful but are unable to contribute the feature yourself, please feel free to [submit a feature request](https://community.bitmovin.com/t/how-to-submit-a-feature-request-to-us/1463) through the Bitmovin Community. Feature suggestions will be considered by Bitmovin’s Product team for future roadmap plans.
+
+## Reporting a bug
+
+If you come across a bug related to the Bitmovin Player React, please raise this through the support ticketing system accessible in your [Bitmovin Dashboard](https://dashboard.bitmovin.com/support/tickets).
+
+## Support and SLA Disclaimer
+
+As an open-source project and not a core product offering, any request, issue or query related to this project is excluded from any SLA and Support terms that a customer might have with either Bitmovin or another third-party service provider or Company contributing to this project. Any and all updates are purely at the contributor's discretion.
+
+## Need more help?
+
+Should you need further help, please raise your request to your Bitmovin account team. We can assist in a number of ways, from providing you professional services help to putting you in touch with preferred system integrators who can work with you to achieve your goals.
