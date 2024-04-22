@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI workflow
 - Release workflow
 - Skip CHANGELOG update option to the release workflow
+- Pre-commit hook for linting
 
 ### Changed
 
