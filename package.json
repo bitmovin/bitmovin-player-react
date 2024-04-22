@@ -70,6 +70,6 @@
     "README.md"
   ],
   "lint-staged": {
-    "*.(ts|tsx|js|jsx|md|json)": "eslint --fix"
+    "*.(ts|tsx|js|jsx|json)": "eslint --fix"
   }
 }
