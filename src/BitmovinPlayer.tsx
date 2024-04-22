@@ -48,6 +48,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   const isSourceChangedAtLeastOnce = useRef<boolean>(false);
 
   const [player, setPlayer] = useState<PlayerAPI | undefined>();
+  const latestPlayerRef = useRef<PlayerAPI | undefined>();
 
   // Initialize the player on mount.
   useEffect(
@@ -70,6 +71,8 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
       initializePlayerUi(initializedPlayer, config, customUi);
 
+      latestPlayerRef.current = initializedPlayer;
+
       if (playerRefProp) {
         setRef(playerRefProp, initializedPlayer);
       }
@@ -87,7 +90,11 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
   // Load or reload the source.
   useEffect(() => {
-    if (!player) {
+    if (
+      !player ||
+      // Skip if the player is not the latest one, this happens in case of HMR.
+      player !== latestPlayerRef.current
+    ) {
       return;
     }
 
