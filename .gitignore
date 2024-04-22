@@ -10,4 +10,4 @@ npm-debug.log*
 
 release/.npmrc
 
-example/src/config.json
+example/src/config.ts

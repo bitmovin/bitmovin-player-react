@@ -3,7 +3,7 @@ import { BitmovinPlayer } from 'bitmovin-player-react';
 import { ControlBar, PlaybackToggleOverlay, SeekBar, UIContainer, UIVariant } from 'bitmovin-player-ui';
 import { Fragment } from 'react';
 
-import config from './config.json';
+import { config } from './config.js';
 
 const defaultPlayerSource: SourceConfig = {
   hls: 'https://cdn.bitmovin.com/content/assets/streams-sample-video/sintel/m3u8/index.m3u8',

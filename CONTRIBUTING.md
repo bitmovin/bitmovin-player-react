@@ -13,7 +13,10 @@ Before creating a pull request, please
 
 ## Development workflow
 
-To get started with the project, run `npm run bootstrap && npm run start:dev` in the root directory to install the required dependencies for each package, start the example app and the build scripts in the watch mode. Any changes you make in your library's JavaScript (TypeScript) code will be reflected in the example app without a rebuild.
+To get started with the project:
+
+- Create the config file from the dist file `cp ./example/src/config.dist.ts ./example/src/config.ts` and update it with your Bitmovin Player license key
+- Run `npm run bootstrap && npm run start:dev` in the root directory to install the required dependencies for each package, start the example app and the build scripts in the watch mode. Any changes you make in your library's JavaScript (TypeScript) code will be reflected in the example app without a rebuild.
 
 ## TypeScript Code Style
 
