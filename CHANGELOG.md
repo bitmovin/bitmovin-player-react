@@ -22,4 +22,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- HMR breaks rendering
+- HMR breaks rendering ([#8](https://github.com/bitmovin/bitmovin-player-react/pull/8))
