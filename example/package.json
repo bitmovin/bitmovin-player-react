@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start:dev": "vite"
+  },
+  "dependencies": {
+    "bitmovin-player": "^8.159.0",
+    "bitmovin-player-react": "file:..",
+    "bitmovin-player-ui": "^3.60.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.7"
+  }
+}

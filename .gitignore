@@ -9,3 +9,5 @@ coverage
 npm-debug.log*
 
 release/.npmrc
+
+example/src/config.ts
