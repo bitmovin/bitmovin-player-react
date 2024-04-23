@@ -20,3 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve `UIVariant` imports
 - Include React 18 in peer dependencies
 - Safe NPM login in the release workflow
+
+### Fixed
+
+- HMR breaks rendering ([#8](https://github.com/bitmovin/bitmovin-player-react/pull/8))
