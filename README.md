@@ -337,6 +337,7 @@ export function MyComponent() {
   );
 }
 ```
+
 # Maintenance and Updates
 
 As an open source project, this library is not part of a regular maintenance or update schedule and is updated on an adhoc basis when contributions are made.
