@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI workflow ([#2](https://github.com/bitmovin/bitmovin-player-react/pull/2))
 - Release workflow ([#3](https://github.com/bitmovin/bitmovin-player-react/pull/3))
 - Skip CHANGELOG update option to the release workflow  ([#6](https://github.com/bitmovin/bitmovin-player-react/pull/6))
+- Pre-commit hook for linting ([#9](https://github.com/bitmovin/bitmovin-player-react/pull/9))
 - Example ([#10](https://github.com/bitmovin/bitmovin-player-react/pull/10))
 - Contribution guide ([#10](https://github.com/bitmovin/bitmovin-player-react/pull/10))
 - Issue template ([#10](https://github.com/bitmovin/bitmovin-player-react/pull/10))
