@@ -1,5 +1,5 @@
 import { PlayerConfig, SourceConfig } from 'bitmovin-player';
-import { BitmovinPlayer } from 'bitmovin-player-react';
+import { BitmovinPlayer, CustomUi } from 'bitmovin-player-react';
 import { ControlBar, PlaybackToggleOverlay, SeekBar, UIContainer, UIVariant } from 'bitmovin-player-ui';
 import { Fragment } from 'react';
 
@@ -39,6 +39,10 @@ const uiVariantsFactory = (): UIVariant[] => [
   },
 ];
 
+const customUi: CustomUi = {
+  variantsFactory: uiVariantsFactory,
+};
+
 export function App() {
   return (
     <Fragment>
@@ -49,13 +53,7 @@ export function App() {
           maxWidth: '800px',
         }}
       >
-        <BitmovinPlayer
-          source={defaultPlayerSource}
-          config={playerConfig}
-          customUi={{
-            variantsFactory: uiVariantsFactory,
-          }}
-        />
+        <BitmovinPlayer source={defaultPlayerSource} config={playerConfig} customUi={customUi} />
       </div>
     </Fragment>
   );
