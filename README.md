@@ -328,7 +328,7 @@ export function MyComponent() {
 
 ## Possible pitfalls
 
-### Avoid config and source objects recreation on every render
+### Avoid player config, UI config, and source objects recreation on every render
 
 ```tsx
 export function MyComponent() {
