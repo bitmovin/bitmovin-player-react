@@ -101,6 +101,23 @@ describe('BitmovinPlayer', () => {
         expect(FakePlayer.prototype.unload).toHaveBeenCalled();
       });
     });
+
+    it('should load the source again on changes in the player config', async () => {
+      jest.spyOn(FakePlayer.prototype, 'load');
+      jest.spyOn(FakePlayer.prototype, 'unload');
+
+      const { rerender } = render(<BitmovinPlayer config={playerConfig} source={playerSource} />, {
+        queries,
+      });
+
+      rerender(<BitmovinPlayer config={{ ...playerConfig }} source={playerSource} />);
+
+      await waitFor(() => {
+        expect(FakePlayer.prototype.load).toHaveBeenCalledTimes(2);
+        // The player is simply destroyer, so the `unload` should not be invoked.
+        expect(FakePlayer.prototype.unload).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('UI', () => {
