@@ -47,7 +47,7 @@ export function MyComponent() {
 
 ## Dynamically update player source config
 
-`BitmovinPlayer` keeps track of the source config and reloads the player on changes in the source config:
+`BitmovinPlayer` keeps track of the source config and reloads the source on changes:
 
 ```tsx
 const playerSources: Array<SourceConfig | undefined> = [
@@ -89,7 +89,7 @@ export function MyComponent() {
 
 ## Dynamically update player config and UI config
 
-`BitmovinPlayer` keeps track of the player config and UI config and reinitializes the player (destroys the old instance and creates a new one) on changes in the player config or UI config:
+`BitmovinPlayer` keeps track of the player config and UI config and reinitializes the player (destroys the old instance and creates a new one) on changes :
 
 ```ts
 const playerConfigs: Array<PlayerConfig> = [
