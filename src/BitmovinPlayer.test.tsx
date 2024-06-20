@@ -51,7 +51,7 @@ describe('BitmovinPlayer', () => {
       expect(FakePlayer.prototype.destroy).toHaveBeenCalled();
     });
 
-    it('should reinitialize the player on changes in the play config', async () => {
+    it('should reinitialize the player on changes in the player config', async () => {
       jest.spyOn(FakePlayer.prototype, 'destroy');
 
       const { getBySelector, rerender } = render(<BitmovinPlayer config={playerConfig} />, {
