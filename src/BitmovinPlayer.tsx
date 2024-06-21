@@ -70,16 +70,12 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
     latestPlayerRef.current = initializedPlayer;
 
-    if (playerRefProp) {
-      setRef(playerRefProp, initializedPlayer);
-    }
-
     setPlayer(initializedPlayer);
 
     return () => {
       destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
     };
-  }, [config, customUi, playerRefProp]);
+  }, [config, customUi]);
 
   // Load or reload the source.
   useEffect(() => {
@@ -110,6 +106,14 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       }
     }
   }, [source, player]);
+
+  useEffect(() => {
+    if (!player || !playerRefProp) {
+      return;
+    }
+
+    setRef(playerRefProp, player);
+  }, [player, playerRefProp]);
 
   return <div className={className} ref={rootContainerElementRefHandler} />;
 });

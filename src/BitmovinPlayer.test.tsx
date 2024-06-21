@@ -251,6 +251,21 @@ describe('BitmovinPlayer', () => {
 
       expect(playerRefCallback).toHaveBeenCalledWith(expect.any(FakePlayer));
     });
+
+    it('should not reinitialize the player on ref changes', () => {
+      jest.spyOn(FakePlayer.prototype, 'destroy');
+
+      const playerRefCallback: RefCallback<PlayerAPI> = jest.fn();
+
+      const { rerender } = render(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
+
+      rerender(<BitmovinPlayer config={playerConfig} playerRef={undefined} />);
+      rerender(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
+
+      expect(playerRefCallback).toHaveBeenCalledWith(expect.any(FakePlayer));
+      expect(playerRefCallback).toHaveBeenCalledTimes(2);
+      expect(FakePlayer.prototype.destroy).not.toHaveBeenCalled();
+    });
   });
 
   /**
