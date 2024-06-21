@@ -128,7 +128,7 @@ export function MyComponent() {
 
   return (
     <Fragment>
-      <h1>Dynamic source demo</h1>
+      <h1>Dynamic player config demo</h1>
       <BitmovinPlayer config={playerConfig} source={playerSource} />
     </Fragment>
   );
