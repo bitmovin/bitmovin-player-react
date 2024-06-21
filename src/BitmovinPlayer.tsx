@@ -65,7 +65,8 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
       setRef(playerRefProp, player);
     },
-    // Only the first player ref is relevant and should be used to avoid unnecessary callbacks.
+    // Only the first `playerRef` is relevant and should be used to avoid
+    // unnecessary ref callback invocations (in case the `playerRef` is a ref function).
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
