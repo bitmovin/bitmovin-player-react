@@ -1,6 +1,15 @@
 import { Player, PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
 import { UIContainer, UIFactory, UIManager, UIVariant } from 'bitmovin-player-ui';
-import { ForwardedRef, forwardRef, MutableRefObject, RefCallback, useEffect, useRef, useState } from 'react';
+import {
+  ForwardedRef,
+  forwardRef,
+  MutableRefObject,
+  RefCallback,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 export type UiContainerFactory = () => UIContainer;
 export type UiVariantsFactory = () => UIVariant[];
@@ -48,6 +57,20 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   const [player, setPlayer] = useState<PlayerAPI | undefined>();
   const latestPlayerRef = useRef<PlayerAPI | undefined>();
 
+  const proxyPlayerRef = useCallback(
+    (player: PlayerAPI) => {
+      if (!playerRefProp) {
+        return;
+      }
+
+      setRef(playerRefProp, player);
+    },
+    // Only the first `playerRef` is relevant and should be used to avoid
+    // unnecessary ref callback invocations (in case the `playerRef` is a ref function).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   // Initialize the player on mount.
   useEffect(() => {
     const rootContainerElement = rootContainerElementRef.current;
@@ -70,12 +93,13 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
 
     latestPlayerRef.current = initializedPlayer;
 
+    proxyPlayerRef(initializedPlayer);
     setPlayer(initializedPlayer);
 
     return () => {
       destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
     };
-  }, [config, customUi]);
+  }, [config, customUi, proxyPlayerRef]);
 
   // Load or reload the source.
   useEffect(() => {
@@ -106,14 +130,6 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       }
     }
   }, [source, player]);
-
-  useEffect(() => {
-    if (!player || !playerRefProp) {
-      return;
-    }
-
-    setRef(playerRefProp, player);
-  }, [player, playerRefProp]);
 
   return <div className={className} ref={rootContainerElementRefHandler} />;
 });
