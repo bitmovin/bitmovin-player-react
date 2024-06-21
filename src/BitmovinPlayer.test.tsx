@@ -263,7 +263,7 @@ describe('BitmovinPlayer', () => {
       rerender(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
 
       expect(playerRefCallback).toHaveBeenCalledWith(expect.any(FakePlayer));
-      expect(playerRefCallback).toHaveBeenCalledTimes(2);
+      expect(playerRefCallback).toHaveBeenCalledTimes(1);
       expect(FakePlayer.prototype.destroy).not.toHaveBeenCalled();
     });
   });
