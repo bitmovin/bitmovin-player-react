@@ -1,6 +1,6 @@
 {
   "name": "bitmovin-player-react",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "A React component that creates an instance of Bitmovin player",
   "license": "MIT",
   "author": "Bitmovin",
