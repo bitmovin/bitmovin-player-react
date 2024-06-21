@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Example ([#10](https://github.com/bitmovin/bitmovin-player-react/pull/10))
 - Contribution guide ([#10](https://github.com/bitmovin/bitmovin-player-react/pull/10))
 - Issue template ([#10](https://github.com/bitmovin/bitmovin-player-react/pull/10))
+- Reinitialize the player on changes in the player config or UI config ([#12](https://github.com/bitmovin/bitmovin-player-react/pull/12))
 
 ### Changed
 

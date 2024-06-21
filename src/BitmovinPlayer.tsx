@@ -2,7 +2,11 @@ import { Player, PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
 import { UIContainer, UIFactory, UIManager, UIVariant } from 'bitmovin-player-ui';
 import { ForwardedRef, forwardRef, MutableRefObject, RefCallback, useEffect, useRef, useState } from 'react';
 
-interface BitmovinPlayerProps {
+export type UiContainerFactory = () => UIContainer;
+export type UiVariantsFactory = () => UIVariant[];
+export type CustomUi = { containerFactory: UiContainerFactory } | { variantsFactory: UiVariantsFactory };
+
+export interface BitmovinPlayerProps {
   config: PlayerConfig;
   source?: SourceConfig;
   className?: string;
@@ -22,13 +26,7 @@ interface BitmovinPlayerProps {
    *    - https://www.npmjs.com/package/bitmovin-player-ui.
    *    - https://cdn.bitmovin.com/player/web/8/docs/interfaces/Core.PlayerConfig.html#ui.
    * */
-  customUi?:
-    | {
-        containerFactory: () => UIContainer;
-      }
-    | {
-        variantsFactory: () => UIVariant[];
-      };
+  customUi?: CustomUi;
 }
 
 export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
@@ -51,42 +49,33 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   const latestPlayerRef = useRef<PlayerAPI | undefined>();
 
   // Initialize the player on mount.
-  useEffect(
-    () => {
-      const rootContainerElement = rootContainerElementRef.current;
+  useEffect(() => {
+    const rootContainerElement = rootContainerElementRef.current;
 
-      if (!rootContainerElement) {
-        return;
-      }
+    if (!rootContainerElement) {
+      return;
+    }
 
-      // We create elements manually to workaround the React strict mode.
-      // In the strict mode the mount hook is invoked twice. Since the destroy method is async
-      // the next mount hook is invoked before the previous destroy method is finished and the new player instance
-      // messes up the old one. This workaround ensures that each player instance has its own container and video elements.
-      // This should be improved in the future if possible.
-      const { createdPlayerContainerElement, createdVideoElement } = preparePlayerElements(rootContainerElement);
+    // We create elements manually to workaround the React strict mode.
+    // In the strict mode the mount hook is invoked twice. Since the destroy method is async
+    // the next mount hook is invoked before the previous destroy method is finished and the new player instance
+    // messes up the old one. This workaround ensures that each player instance has its own container and video elements.
+    // This should be improved in the future if possible.
+    const { createdPlayerContainerElement, createdVideoElement } = preparePlayerElements(rootContainerElement);
 
-      const convertedConfig = convertConfig(config);
-      const initializedPlayer = initializePlayer(createdPlayerContainerElement, createdVideoElement, convertedConfig);
+    const convertedConfig = convertConfig(config);
+    const initializedPlayer = initializePlayer(createdPlayerContainerElement, createdVideoElement, convertedConfig);
 
-      initializePlayerUi(initializedPlayer, config, customUi);
+    initializePlayerUi(initializedPlayer, config, customUi);
 
-      latestPlayerRef.current = initializedPlayer;
+    latestPlayerRef.current = initializedPlayer;
 
-      if (playerRefProp) {
-        setRef(playerRefProp, initializedPlayer);
-      }
+    setPlayer(initializedPlayer);
 
-      setPlayer(initializedPlayer);
-
-      return () => {
-        destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
-      };
-    },
-    // Ignore the dependencies, as the effect should run only once (on mount).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+    return () => {
+      destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
+    };
+  }, [config, customUi]);
 
   // Load or reload the source.
   useEffect(() => {
@@ -117,6 +106,14 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
       }
     }
   }, [source, player]);
+
+  useEffect(() => {
+    if (!player || !playerRefProp) {
+      return;
+    }
+
+    setRef(playerRefProp, player);
+  }, [player, playerRefProp]);
 
   return <div className={className} ref={rootContainerElementRefHandler} />;
 });

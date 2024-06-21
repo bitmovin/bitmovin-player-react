@@ -47,7 +47,7 @@ export function MyComponent() {
 
 ## Dynamically update player source config
 
-`BitmovinPlayer` keeps track of the source config and reloads the player when the source config changes:
+`BitmovinPlayer` keeps track of the source config and reloads the source on changes:
 
 ```tsx
 const playerSources: Array<SourceConfig | undefined> = [
@@ -86,6 +86,56 @@ export function MyComponent() {
   );
 }
 ```
+
+## Dynamically update player config and UI config
+
+`BitmovinPlayer` keeps track of the player config and UI config and reinitializes the player (destroys the old instance and creates a new one) on changes :
+
+```ts
+const playerConfigs: Array<PlayerConfig> = [
+  {
+    key: "<key>",
+    playback: {
+      autoplay: true,
+      muted: true,
+    },
+  },
+  {
+    key: "<key>",
+    playback: {
+      autoplay: false,
+      muted: false,
+    },
+  },
+];
+
+export function MyComponent() {
+  const [playerConfig, setPlayerConfig] = useState(playerConfigs[0]);
+
+  useEffect(() => {
+    let lastConfigIndex = 0;
+
+    const intervalId = setInterval(() => {
+      const newIndex = ++lastConfigIndex % playerConfigs.length;
+
+      console.log(`Switching to player config ${newIndex}`, playerConfigs[newIndex]);
+
+      setPlayerConfig(playerConfigs[newIndex]);
+    }, 15_000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+    <Fragment>
+      <h1>Dynamic player config demo</h1>
+      <BitmovinPlayer config={playerConfig} source={playerSource} />
+    </Fragment>
+  );
+}
+```
+
+The same applies to the `customUi` object.
 
 ## Attach event listeners
 
@@ -145,13 +195,17 @@ export function MyComponent() {
 You can use `UIContainer` from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
 ```tsx
-import { PlaybackToggleOverlay, UIContainer } from "bitmovin-player-ui";
+import { PlaybackToggleOverlay, UIContainer, CustomUi } from "bitmovin-player-ui";
 
 // Ensure this function returns a new instance of the `UIContainer` on every call.
 const uiContainerFactory = () =>
   new UIContainer({
     components: [new PlaybackToggleOverlay()],
   });
+
+const customUi: CustomUi = {
+  containerFactory: uiContainerFactory
+};
 
 export function MyComponent() {
   return (
@@ -160,9 +214,7 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        customUi={{
-          containerFactory: uiContainerFactory,
-        }}
+        customUi={customUi}
       />
     </Fragment>
   );
@@ -174,7 +226,7 @@ export function MyComponent() {
 You can use `UIVariant`s from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
 
 ```tsx
-import { UIVariant } from "bitmovin-player-ui";
+import { UIVariant, CustomUi } from "bitmovin-player-ui";
 
 // Ensure this function returns a new instance of the `UIVariant[]` on every call.
 const uiVariantsFactory = (): UIVariant[] => [
@@ -198,6 +250,10 @@ const uiVariantsFactory = (): UIVariant[] => [
   },
 ];
 
+const customUi: CustomUi = {
+  variantsFactory: uiVariantsFactory
+};
+
 export function MyComponent() {
   return (
     <Fragment>
@@ -205,9 +261,7 @@ export function MyComponent() {
       <BitmovinPlayer
         source={playerSource}
         config={playerConfig}
-        customUi={{
-          variantsFactory: uiVariantsFactory,
-        }}
+        customUi={customUi}
       />
     </Fragment>
   );
@@ -274,7 +328,7 @@ export function MyComponent() {
 
 ## Possible pitfalls
 
-### Avoid source object recreation on every render
+### Avoid player config, UI config, and source objects recreation on every render
 
 ```tsx
 export function MyComponent() {
@@ -307,6 +361,8 @@ Instead do one of the following:
 - Create a source object outside of the component (refer to the "Simple demo" above)
 - Use `useState` (refer to the "Dynamic source demo" above)
 - Use `useMemo`:
+
+The same applies to the `config`, `source`, and `customUi` objects.
 
 ```tsx
 export function MyComponent() {

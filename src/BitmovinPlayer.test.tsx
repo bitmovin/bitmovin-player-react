@@ -30,58 +30,94 @@ beforeEach(() => {
 });
 
 describe('BitmovinPlayer', () => {
-  it('should render the player', async () => {
-    const { getBySelector, getAllBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
-      queries,
+  describe('Player config', () => {
+    it('should render the player on mount', async () => {
+      const { getBySelector, getAllBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
+        queries,
+      });
+
+      expect(getAllBySelector('video')).toHaveLength(1);
+      expect(getBySelector('video')).toBeInTheDocument();
+      expect(getBySelector(`.${FakePlayer.containerClassName}`)).toBeInTheDocument();
     });
 
-    expect(getAllBySelector('video')).toHaveLength(1);
-    expect(getBySelector('video')).toBeInTheDocument();
-    expect(getBySelector(`.${FakePlayer.containerClassName}`)).toBeInTheDocument();
-  });
+    it('should destroy the player on unmount', () => {
+      jest.spyOn(FakePlayer.prototype, 'destroy');
 
-  it('should load the source initially', async () => {
-    jest.spyOn(FakePlayer.prototype, 'load');
+      const { unmount } = render(<BitmovinPlayer config={playerConfig} />);
 
-    render(<BitmovinPlayer config={playerConfig} source={playerSource} />);
+      unmount();
 
-    await waitFor(() => {
-      expect(FakePlayer.prototype.load).toHaveBeenCalled();
+      expect(FakePlayer.prototype.destroy).toHaveBeenCalled();
     });
-  });
 
-  it('should unload the source', async () => {
-    jest.spyOn(FakePlayer.prototype, 'load');
-    jest.spyOn(FakePlayer.prototype, 'unload');
+    it('should reinitialize the player on changes in the player config', async () => {
+      jest.spyOn(FakePlayer.prototype, 'destroy');
 
-    const { rerender } = render(<BitmovinPlayer config={playerConfig} source={playerSource} />);
+      const { getBySelector, rerender } = render(<BitmovinPlayer config={playerConfig} />, {
+        queries,
+      });
 
-    rerender(<BitmovinPlayer config={playerConfig} source={undefined} />);
+      rerender(<BitmovinPlayer config={{ ...playerConfig }} />);
 
-    await waitFor(() => {
-      expect(FakePlayer.prototype.load).toHaveBeenCalled();
-      expect(FakePlayer.prototype.unload).toHaveBeenCalled();
-    });
-  });
+      await FakePlayer.ensureLatestDestroyFinished();
 
-  it("should not unload the source if it's empty initially", async () => {
-    jest.spyOn(FakePlayer.prototype, 'unload');
-
-    render(<BitmovinPlayer config={playerConfig} />);
-
-    await expectNeverOccurs(() => {
-      expect(FakePlayer.prototype.unload).toHaveBeenCalled();
+      expect(FakePlayer.prototype.destroy).toHaveBeenCalled();
+      expect(getBySelector(`.${FakePlayer.containerClassName}`)).toBeInTheDocument();
     });
   });
 
-  it('should destroy the player', () => {
-    jest.spyOn(FakePlayer.prototype, 'destroy');
+  describe('Source config', () => {
+    it('should load the source initially', async () => {
+      jest.spyOn(FakePlayer.prototype, 'load');
 
-    const { unmount } = render(<BitmovinPlayer config={playerConfig} />);
+      render(<BitmovinPlayer config={playerConfig} source={playerSource} />);
 
-    unmount();
+      await waitFor(() => {
+        expect(FakePlayer.prototype.load).toHaveBeenCalled();
+      });
+    });
 
-    expect(FakePlayer.prototype.destroy).toHaveBeenCalled();
+    it('should unload the source', async () => {
+      jest.spyOn(FakePlayer.prototype, 'load');
+      jest.spyOn(FakePlayer.prototype, 'unload');
+
+      const { rerender } = render(<BitmovinPlayer config={playerConfig} source={playerSource} />);
+
+      rerender(<BitmovinPlayer config={playerConfig} source={undefined} />);
+
+      await waitFor(() => {
+        expect(FakePlayer.prototype.load).toHaveBeenCalled();
+        expect(FakePlayer.prototype.unload).toHaveBeenCalled();
+      });
+    });
+
+    it("should not unload the source if it's empty initially", async () => {
+      jest.spyOn(FakePlayer.prototype, 'unload');
+
+      render(<BitmovinPlayer config={playerConfig} />);
+
+      await expectNeverOccurs(() => {
+        expect(FakePlayer.prototype.unload).toHaveBeenCalled();
+      });
+    });
+
+    it('should load the source again on changes in the player config', async () => {
+      jest.spyOn(FakePlayer.prototype, 'load');
+      jest.spyOn(FakePlayer.prototype, 'unload');
+
+      const { rerender } = render(<BitmovinPlayer config={playerConfig} source={playerSource} />, {
+        queries,
+      });
+
+      rerender(<BitmovinPlayer config={{ ...playerConfig }} source={playerSource} />);
+
+      await waitFor(() => {
+        expect(FakePlayer.prototype.load).toHaveBeenCalledTimes(2);
+        // The player is simply destroyer, so the `unload` should not be invoked.
+        expect(FakePlayer.prototype.unload).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('UI', () => {
@@ -214,6 +250,21 @@ describe('BitmovinPlayer', () => {
       render(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
 
       expect(playerRefCallback).toHaveBeenCalledWith(expect.any(FakePlayer));
+    });
+
+    it('should not reinitialize the player on ref changes', () => {
+      jest.spyOn(FakePlayer.prototype, 'destroy');
+
+      const playerRefCallback: RefCallback<PlayerAPI> = jest.fn();
+
+      const { rerender } = render(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
+
+      rerender(<BitmovinPlayer config={playerConfig} playerRef={undefined} />);
+      rerender(<BitmovinPlayer config={playerConfig} playerRef={playerRefCallback} />);
+
+      expect(playerRefCallback).toHaveBeenCalledWith(expect.any(FakePlayer));
+      expect(playerRefCallback).toHaveBeenCalledTimes(2);
+      expect(FakePlayer.prototype.destroy).not.toHaveBeenCalled();
     });
   });
 
