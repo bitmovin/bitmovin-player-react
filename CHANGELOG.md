@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- UI config not respected for default UI ([#16](https://github.com/bitmovin/bitmovin-player-react/pull/16))
+
 ## 1.0.0 - 2024-06-25
 
 ### Added
