@@ -9,7 +9,7 @@ jest.mock('bitmovin-player', () => {
 
 import { render, waitFor } from '@testing-library/react';
 import { PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
-import { PlaybackToggleOverlay, UIContainer } from 'bitmovin-player-ui';
+import { PlaybackToggleOverlay, TitleBar, UIContainer } from 'bitmovin-player-ui';
 import { UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager.js';
 import { MutableRefObject, RefCallback, StrictMode } from 'react';
 
@@ -142,6 +142,35 @@ describe('BitmovinPlayer', () => {
       });
     });
 
+    it('should initialize the default UI with the provided UI config', () => {
+      const { getBySelector } = render(
+        <BitmovinPlayer
+          config={{
+            ...playerConfig,
+            ui: {
+              metadata: {
+                title: 'Sintel',
+                description: 'A short film by Blender Foundation',
+              },
+            },
+          }}
+        />,
+        {
+          queries,
+        },
+      );
+
+      expect(getBySelector('.bmpui-ui-titlebar')).toBeInTheDocument();
+
+      expect(getBySelector('.bmpui-label-metadata-title')).toBeInTheDocument();
+      expect(getBySelector('.bmpui-label-metadata-title')).toHaveTextContent('Sintel');
+
+      expect(getBySelector('.bmpui-label-metadata-description')).toBeInTheDocument();
+      expect(getBySelector('.bmpui-label-metadata-description')).toHaveTextContent(
+        'A short film by Blender Foundation',
+      );
+    });
+
     it('should initialize the UI using the `UIContainer`', () => {
       const uiContainerFactory = () =>
         new UIContainer({
@@ -194,6 +223,43 @@ describe('BitmovinPlayer', () => {
       defaultUiElementSelectors.forEach(selector => {
         expect(getBySelector(selector)).not.toBeInTheDocument();
       });
+    });
+
+    it('should initialize the custom UI with the provided UI config', () => {
+      const uiContainerFactory = () =>
+        new UIContainer({
+          components: [new TitleBar()],
+        });
+
+      const { getBySelector } = render(
+        <BitmovinPlayer
+          config={{
+            ...playerConfig,
+            ui: {
+              metadata: {
+                title: 'Sintel',
+                description: 'A short film by Blender Foundation',
+              },
+            },
+          }}
+          customUi={{
+            containerFactory: uiContainerFactory,
+          }}
+        />,
+        {
+          queries,
+        },
+      );
+
+      expect(getBySelector('.bmpui-ui-titlebar')).toBeInTheDocument();
+
+      expect(getBySelector('.bmpui-label-metadata-title')).toBeInTheDocument();
+      expect(getBySelector('.bmpui-label-metadata-title')).toHaveTextContent('Sintel');
+
+      expect(getBySelector('.bmpui-label-metadata-description')).toBeInTheDocument();
+      expect(getBySelector('.bmpui-label-metadata-description')).toHaveTextContent(
+        'A short film by Blender Foundation',
+      );
     });
 
     it('should not initialize any UI', () => {
