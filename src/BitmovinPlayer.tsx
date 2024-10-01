@@ -155,7 +155,7 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
   else if (customUi && 'variantsFactory' in customUi) {
     new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
   } else {
-    UIFactory.buildDefaultUI(player);
+    UIFactory.buildDefaultUI(player, playerConfig.ui);
   }
 }
 
