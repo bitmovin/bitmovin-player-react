@@ -142,6 +142,8 @@ function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
   }
 }
 
+let uiManager: UIManager | undefined;
+
 function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, customUi?: BitmovinPlayerProps['customUi']) {
   if (playerConfig.ui === false) {
     return;
@@ -149,13 +151,13 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
 
   // If a custom UI container is provided, use it instead of the default UI.
   if (customUi && 'containerFactory' in customUi) {
-    new UIManager(player, customUi.containerFactory(), playerConfig.ui);
+    uiManager = new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
   // If custom UI variants are provided, use them instead of the default UI.
   else if (customUi && 'variantsFactory' in customUi) {
-    new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
+    uiManager = new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
   } else {
-    UIFactory.buildDefaultUI(player, playerConfig.ui);
+    uiManager = UIFactory.buildDefaultUI(player, playerConfig.ui);
   }
 }
 
@@ -208,5 +210,12 @@ function destroyPlayer(
     rootContainerElement.removeChild(playerContainerElement);
   };
 
+  // First destroy the UI manager if it exists
+  if (uiManager) {
+    uiManager.release();
+    uiManager = undefined;
+  }
+
+  // Then destroy the player
   player.destroy().then(removePlayerContainerElement, removePlayerContainerElement);
 }

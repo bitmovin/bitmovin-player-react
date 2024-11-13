@@ -1,7 +1,7 @@
 import { PlayerConfig, SourceConfig } from 'bitmovin-player';
 import { BitmovinPlayer, CustomUi } from 'bitmovin-player-react';
 import { ControlBar, PlaybackToggleOverlay, SeekBar, UIContainer, UIVariant } from 'bitmovin-player-ui';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 
 import { config } from './config.dist.ts';
 
@@ -44,6 +44,8 @@ const customUi: CustomUi = {
 };
 
 export function App() {
+  const [showPlayer, setShowPlayer] = useState(true);
+
   return (
     <Fragment>
       <h1>Bitmovin Player React Demo</h1>
@@ -53,8 +55,9 @@ export function App() {
           maxWidth: '800px',
         }}
       >
-        <BitmovinPlayer source={defaultPlayerSource} config={playerConfig} customUi={customUi} />
+        {showPlayer && <BitmovinPlayer source={defaultPlayerSource} config={playerConfig} customUi={customUi} />}
       </div>
+      <button onClick={() => setShowPlayer(!showPlayer)}>Toggle Player</button>
     </Fragment>
   );
 }
