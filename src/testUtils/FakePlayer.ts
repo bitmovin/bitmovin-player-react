@@ -12,6 +12,7 @@ export class FakePlayer
     Pick<
       PlayerModule.PlayerAPI,
       | 'on'
+      | 'off'
       | 'load'
       | 'getSource'
       | 'unload'
@@ -56,6 +57,8 @@ export class FakePlayer
   }
 
   on() {}
+
+  off() {}
 
   getContainer() {
     return this.containerElement;
