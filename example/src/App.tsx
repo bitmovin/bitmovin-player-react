@@ -49,6 +49,9 @@ export function App() {
   return (
     <Fragment>
       <h1>Bitmovin Player React Demo</h1>
+      <button className="toggle-player" onClick={() => setShowPlayer(!showPlayer)}>
+        Toggle Player
+      </button>
       <div
         style={{
           position: 'relative',
@@ -57,7 +60,6 @@ export function App() {
       >
         {showPlayer && <BitmovinPlayer source={defaultPlayerSource} config={playerConfig} customUi={customUi} />}
       </div>
-      <button onClick={() => setShowPlayer(!showPlayer)}>Toggle Player</button>
     </Fragment>
   );
 }

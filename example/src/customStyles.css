@@ -1,3 +1,7 @@
 .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
   border-color: red;
 }
+
+.toggle-player {
+  margin-bottom: 1rem;
+}

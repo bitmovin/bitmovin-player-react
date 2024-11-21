@@ -89,7 +89,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
     const convertedConfig = convertConfig(config);
     const initializedPlayer = initializePlayer(createdPlayerContainerElement, createdVideoElement, convertedConfig);
 
-    initializePlayerUi(initializedPlayer, config, customUi);
+    const uiManager = initializePlayerUi(initializedPlayer, config, customUi);
 
     latestPlayerRef.current = initializedPlayer;
 
@@ -97,7 +97,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
     setPlayer(initializedPlayer);
 
     return () => {
-      destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
+      destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement, uiManager);
     };
   }, [config, customUi, proxyPlayerRef]);
 
@@ -142,8 +142,6 @@ function setRef<T>(ref: RefCallback<T> | MutableRefObject<T>, value: T) {
   }
 }
 
-let uiManager: UIManager | undefined;
-
 function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, customUi?: BitmovinPlayerProps['customUi']) {
   if (playerConfig.ui === false) {
     return;
@@ -151,13 +149,13 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
 
   // If a custom UI container is provided, use it instead of the default UI.
   if (customUi && 'containerFactory' in customUi) {
-    uiManager = new UIManager(player, customUi.containerFactory(), playerConfig.ui);
+    return new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
   // If custom UI variants are provided, use them instead of the default UI.
   else if (customUi && 'variantsFactory' in customUi) {
-    uiManager = new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
+    return new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
   } else {
-    uiManager = UIFactory.buildDefaultUI(player, playerConfig.ui);
+    return UIFactory.buildDefaultUI(player, playerConfig.ui);
   }
 }
 
@@ -203,6 +201,7 @@ function destroyPlayer(
   player: PlayerAPI,
   rootContainerElement: HTMLDivElement,
   playerContainerElement: HTMLDivElement,
+  uiManager: UIManager | undefined,
 ) {
   playerContainerElement.style.display = 'none';
 
