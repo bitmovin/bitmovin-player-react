@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Cleanup player-ui before destroying player on unmount([#18](https://github.com/bitmovin/bitmovin-player-react/pull/18)
+
 ## 1.0.1 - 2024-10-01
 
 ### Fixed
