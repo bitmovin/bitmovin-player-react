@@ -212,7 +212,6 @@ function destroyPlayer(
   // First destroy the UI manager if it exists
   if (uiManager) {
     uiManager.release();
-    uiManager = undefined;
   }
 
   // Then destroy the player
