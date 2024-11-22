@@ -89,7 +89,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
     const convertedConfig = convertConfig(config);
     const initializedPlayer = initializePlayer(createdPlayerContainerElement, createdVideoElement, convertedConfig);
 
-    initializePlayerUi(initializedPlayer, config, customUi);
+    const uiManager = initializePlayerUi(initializedPlayer, config, customUi);
 
     latestPlayerRef.current = initializedPlayer;
 
@@ -97,7 +97,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
     setPlayer(initializedPlayer);
 
     return () => {
-      destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement);
+      destroyPlayer(initializedPlayer, rootContainerElement, createdPlayerContainerElement, uiManager);
     };
   }, [config, customUi, proxyPlayerRef]);
 
@@ -149,13 +149,13 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
 
   // If a custom UI container is provided, use it instead of the default UI.
   if (customUi && 'containerFactory' in customUi) {
-    new UIManager(player, customUi.containerFactory(), playerConfig.ui);
+    return new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
   // If custom UI variants are provided, use them instead of the default UI.
   else if (customUi && 'variantsFactory' in customUi) {
-    new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
+    return new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
   } else {
-    UIFactory.buildDefaultUI(player, playerConfig.ui);
+    return UIFactory.buildDefaultUI(player, playerConfig.ui);
   }
 }
 
@@ -201,6 +201,7 @@ function destroyPlayer(
   player: PlayerAPI,
   rootContainerElement: HTMLDivElement,
   playerContainerElement: HTMLDivElement,
+  uiManager: UIManager | undefined,
 ) {
   playerContainerElement.style.display = 'none';
 
@@ -208,5 +209,11 @@ function destroyPlayer(
     rootContainerElement.removeChild(playerContainerElement);
   };
 
+  // First destroy the UI manager if it exists
+  if (uiManager) {
+    uiManager.release();
+  }
+
+  // Then destroy the player
   player.destroy().then(removePlayerContainerElement, removePlayerContainerElement);
 }

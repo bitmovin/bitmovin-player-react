@@ -10,7 +10,7 @@ jest.mock('bitmovin-player', () => {
 import { render, waitFor } from '@testing-library/react';
 import { PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
 import { PlaybackToggleOverlay, TitleBar, UIContainer } from 'bitmovin-player-ui';
-import { UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager.js';
+import { UIManager, UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager.js';
 import { MutableRefObject, RefCallback, StrictMode } from 'react';
 
 import { BitmovinPlayer } from './BitmovinPlayer.js';
@@ -277,6 +277,41 @@ describe('BitmovinPlayer', () => {
 
       defaultUiElementSelectors.forEach(selector => {
         expect(getBySelector(selector)).not.toBeInTheDocument();
+      });
+    });
+
+    describe('Cleanup', () => {
+      it('should properly clean up the UI manager before destroying the player', async () => {
+        const uiManagerReleaseSpy = jest.spyOn(UIManager.prototype, 'release');
+        const playerDestroySpy = jest.spyOn(FakePlayer.prototype, 'destroy');
+
+        const { unmount } = render(<BitmovinPlayer config={playerConfig} />);
+
+        unmount();
+
+        // Verify that release() is called before destroy()
+        expect(uiManagerReleaseSpy).toHaveBeenCalledTimes(1);
+        expect(playerDestroySpy).toHaveBeenCalledTimes(1);
+        expect(uiManagerReleaseSpy.mock.invocationCallOrder[0]).toBeLessThan(
+          playerDestroySpy.mock.invocationCallOrder[0],
+        );
+      });
+
+      it('should not attempt to release UI manager if UI is disabled', () => {
+        const uiManagerReleaseSpy = jest.spyOn(UIManager.prototype, 'release');
+
+        const { unmount } = render(
+          <BitmovinPlayer
+            config={{
+              ...playerConfig,
+              ui: false,
+            }}
+          />,
+        );
+
+        unmount();
+
+        expect(uiManagerReleaseSpy).not.toHaveBeenCalled();
       });
     });
   });
