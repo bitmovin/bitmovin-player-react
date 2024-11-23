@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "bitmovin-player": "^8.159.0",
-    "bitmovin-player-react": "file:..",
+    "bitmovin-player-react": "^1.0.1",
     "bitmovin-player-ui": "^3.60.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
