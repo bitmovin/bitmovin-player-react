@@ -140,21 +140,25 @@ The same applies to the `customUi` object.
 ## Attach event listeners
 
 ```tsx
+import { useMemo } from "react";
 import { PlayerConfig, PlayerEvent } from "bitmovin-player";
 
 export function MyComponent() {
-  const playerConfig: PlayerConfig = {
-    key: "<key>",
-    playback: {
-      muted: true,
-      autoplay: true,
-    },
-    events: {
-      [PlayerEvent.Play]: (event) => {
-        console.log("Play event fired", event);
+  const playerConfig: PlayerConfig = useMemo(
+    () => ({
+      key: '<key>',
+      playback: {
+        muted: true,
+        autoplay: true,
       },
-    },
-  };
+      events: {
+        [PlayerEvent.Play]: event => {
+          console.log('Play event fired', event);
+        },
+      },
+    }),
+    [],
+  );
 
   return (
     <Fragment>
