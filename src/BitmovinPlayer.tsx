@@ -1,4 +1,4 @@
-import { Player, PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
+import { Player, PlayerAPI, PlayerConfig, SourceConfig, UIConfig } from 'bitmovin-player';
 import { UIContainer, UIFactory, UIManager, UIVariant } from 'bitmovin-player-ui';
 import {
   ForwardedRef,
@@ -13,7 +13,11 @@ import {
 
 export type UiContainerFactory = () => UIContainer;
 export type UiVariantsFactory = () => UIVariant[];
-export type CustomUi = { containerFactory: UiContainerFactory } | { variantsFactory: UiVariantsFactory };
+export type UiManagerFactory = (player: PlayerAPI, config: UIConfig) => UIManager;
+export type CustomUi =
+  | { containerFactory: UiContainerFactory }
+  | { variantsFactory: UiVariantsFactory }
+  | { managerFactory: UiManagerFactory };
 
 export interface BitmovinPlayerProps {
   config: PlayerConfig;
@@ -147,15 +151,31 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
     return;
   }
 
+  // If a custom UIManager Factory method was configured through the PlayerConfig, use it directly to not break
+  // suggested PlayerConfig usage.
+  if (playerConfig.style && 'uiManagerFactory' in playerConfig.style) {
+    // @ts-expect-error The StyleConfig.uiManagerFactory is only available since Player version 8.226.0
+    return playerConfig.style.uiManagerFactory(player, playerConfig.ui);
+  }
+
+  // If a custom UIManager Factory method is provided on the React wrapper, use it instead of the default UI.
+  if (customUi && 'managerFactory' in customUi) {
+    return customUi.managerFactory(player, playerConfig.ui);
+  }
   // If a custom UI container is provided, use it instead of the default UI.
-  if (customUi && 'containerFactory' in customUi) {
+  else if (customUi && 'containerFactory' in customUi) {
     return new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
   // If custom UI variants are provided, use them instead of the default UI.
   else if (customUi && 'variantsFactory' in customUi) {
     return new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
-  } else {
+  } else if ('buildDefaultUI' in UIFactory) {
+    // UI v3 is loaded
+    // @ts-expect-error In UI v3 the method was called buildDefaultUI
     return UIFactory.buildDefaultUI(player, playerConfig.ui);
+  } else {
+    // Initializing the default UI from v4
+    return UIFactory.buildUI(player, playerConfig.ui);
   }
 }
 
