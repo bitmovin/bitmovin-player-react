@@ -153,8 +153,7 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
 
   // If a custom UIManager Factory method was configured through the PlayerConfig, use it directly to not break
   // suggested PlayerConfig usage.
-  if (playerConfig.style && 'uiManagerFactory' in playerConfig.style) {
-    // @ts-expect-error The StyleConfig.uiManagerFactory is only available since Player version 8.226.0
+  if (playerConfig.style && 'uiManagerFactory' in playerConfig.style && playerConfig.style.uiManagerFactory) {
     return playerConfig.style.uiManagerFactory(player, playerConfig.ui);
   }
 
