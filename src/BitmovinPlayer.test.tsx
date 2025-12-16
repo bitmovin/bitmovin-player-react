@@ -282,14 +282,20 @@ describe('BitmovinPlayer', () => {
     it('should not initialize any UI when disabled', () => {
       jest.spyOn(UIFactory, 'buildUI');
 
-      render(
+      const { getBySelector } = render(
         <BitmovinPlayer
           config={{
             ...playerConfig,
             ui: false,
           }}
         />,
+        {
+          queries,
+        },
       );
+
+      expect(getBySelector('.bmpui-ui-buffering-overlay')).not.toBeInTheDocument();
+      expect(getBySelector('.bmpui-ui-playbacktoggle-overlay')).not.toBeInTheDocument();
 
       expect(UIFactory.buildUI).not.toHaveBeenCalled();
     });
