@@ -7,22 +7,9 @@ jest.mock('bitmovin-player', () => {
   };
 });
 
-// Mock UIFactory to spy on UI initialization method
-const mockBuildUI = jest.fn();
-
-jest.mock('bitmovin-player-ui', () => {
-  const actual = jest.requireActual('bitmovin-player-ui');
-  return {
-    ...actual,
-    UIFactory: {
-      buildUI: mockBuildUI,
-    },
-  };
-});
-
 import { render, waitFor } from '@testing-library/react';
 import { PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
-import { PlaybackToggleOverlay, TitleBar, UIContainer } from 'bitmovin-player-ui';
+import { PlaybackToggleOverlay, TitleBar, UIContainer, UIFactory } from 'bitmovin-player-ui';
 import { UIManager, UIVariant } from 'bitmovin-player-ui/dist/js/framework/UIManager.js';
 import { MutableRefObject, RefCallback, StrictMode } from 'react';
 
@@ -40,9 +27,6 @@ const playerSource: SourceConfig = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockBuildUI.mockImplementation((player, config) => {
-    return new UIManager(player, new UIContainer({ components: [] }), config);
-  });
 });
 
 describe('BitmovinPlayer', () => {
@@ -140,10 +124,11 @@ describe('BitmovinPlayer', () => {
     describe('Default UI', () => {
       describe('Initialization', () => {
         it('should initialize the default UI', async () => {
+          jest.spyOn(UIFactory, 'buildUI');
           render(<BitmovinPlayer config={playerConfig} />);
 
-          expect(mockBuildUI).toHaveBeenCalledTimes(1);
-          expect(mockBuildUI).toHaveBeenCalledWith(expect.any(FakePlayer), undefined);
+          expect(UIFactory.buildUI).toHaveBeenCalledTimes(1);
+          expect(UIFactory.buildUI).toHaveBeenCalledWith(expect.any(FakePlayer), undefined);
         });
 
         it('should initialize with the provided UI config', () => {
@@ -154,6 +139,8 @@ describe('BitmovinPlayer', () => {
             },
           };
 
+          jest.spyOn(UIFactory, 'buildUI');
+
           render(
             <BitmovinPlayer
               config={{
@@ -163,17 +150,12 @@ describe('BitmovinPlayer', () => {
             />,
           );
 
-          expect(mockBuildUI).toHaveBeenCalledTimes(1);
-          expect(mockBuildUI).toHaveBeenCalledWith(expect.any(FakePlayer), uiConfig);
+          expect(UIFactory.buildUI).toHaveBeenCalledTimes(1);
+          expect(UIFactory.buildUI).toHaveBeenCalledWith(expect.any(FakePlayer), uiConfig);
         });
       });
 
       describe('Rendering', () => {
-        beforeEach(() => {
-          const realUIFactory = jest.requireActual<typeof import('bitmovin-player-ui')>('bitmovin-player-ui').UIFactory;
-          mockBuildUI.mockImplementation(realUIFactory.buildUI);
-        });
-
         it('should render minimal UI elements before source is loaded (v4 behavior)', () => {
           const { getBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
             queries,
@@ -188,6 +170,8 @@ describe('BitmovinPlayer', () => {
     describe('Custom UI', () => {
       describe('Initialization', () => {
         it('should initialize using a UIContainer factory', () => {
+          jest.spyOn(UIFactory, 'buildUI');
+
           const uiContainerFactory = () =>
             new UIContainer({
               components: [new PlaybackToggleOverlay()],
@@ -202,10 +186,12 @@ describe('BitmovinPlayer', () => {
             />,
           );
 
-          expect(mockBuildUI).not.toHaveBeenCalled();
+          expect(UIFactory.buildUI).not.toHaveBeenCalled();
         });
 
         it('should initialize using a UIVariant[] factory', () => {
+          jest.spyOn(UIFactory, 'buildUI');
+
           const uiVariantsFactory = (): UIVariant[] => [
             {
               ui: new UIContainer({
@@ -224,16 +210,11 @@ describe('BitmovinPlayer', () => {
             />,
           );
 
-          expect(mockBuildUI).not.toHaveBeenCalled();
+          expect(UIFactory.buildUI).not.toHaveBeenCalled();
         });
       });
 
       describe('Rendering', () => {
-        beforeEach(() => {
-          const realUIFactory = jest.requireActual<typeof import('bitmovin-player-ui')>('bitmovin-player-ui').UIFactory;
-          mockBuildUI.mockImplementation(realUIFactory.buildUI);
-        });
-
         it('should render custom UI components correctly', () => {
           const uiContainerFactory = () =>
             new UIContainer({
@@ -295,6 +276,8 @@ describe('BitmovinPlayer', () => {
     });
 
     it('should not initialize any UI when disabled', () => {
+      jest.spyOn(UIFactory, 'buildUI');
+
       render(
         <BitmovinPlayer
           config={{
@@ -304,7 +287,7 @@ describe('BitmovinPlayer', () => {
         />,
       );
 
-      expect(mockBuildUI).not.toHaveBeenCalled();
+      expect(UIFactory.buildUI).not.toHaveBeenCalled();
     });
 
     describe('Cleanup', () => {
