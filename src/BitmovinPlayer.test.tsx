@@ -172,10 +172,12 @@ describe('BitmovinPlayer', () => {
         it('should initialize using a UIContainer factory', () => {
           jest.spyOn(UIFactory, 'buildUI');
 
-          const uiContainerFactory = () =>
-            new UIContainer({
-              components: [new PlaybackToggleOverlay()],
-            });
+          const uiContainerFactory = jest.fn(
+            () =>
+              new UIContainer({
+                components: [new PlaybackToggleOverlay()],
+              }),
+          );
 
           render(
             <BitmovinPlayer
@@ -187,19 +189,20 @@ describe('BitmovinPlayer', () => {
           );
 
           expect(UIFactory.buildUI).not.toHaveBeenCalled();
+          expect(uiContainerFactory).toHaveBeenCalled();
         });
 
         it('should initialize using a UIVariant[] factory', () => {
           jest.spyOn(UIFactory, 'buildUI');
 
-          const uiVariantsFactory = (): UIVariant[] => [
+          const uiVariantsFactory = jest.fn((): UIVariant[] => [
             {
               ui: new UIContainer({
                 components: [new PlaybackToggleOverlay()],
               }),
               condition: context => !context.isFullscreen,
             },
-          ];
+          ]);
 
           render(
             <BitmovinPlayer
@@ -211,6 +214,7 @@ describe('BitmovinPlayer', () => {
           );
 
           expect(UIFactory.buildUI).not.toHaveBeenCalled();
+          expect(uiVariantsFactory).toHaveBeenCalled();
         });
       });
 
