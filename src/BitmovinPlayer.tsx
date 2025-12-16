@@ -161,21 +161,25 @@ function initializePlayerUi(player: PlayerAPI, playerConfig: PlayerConfig, custo
   if (customUi && 'managerFactory' in customUi) {
     return customUi.managerFactory(player, playerConfig.ui);
   }
+
   // If a custom UI container is provided, use it instead of the default UI.
-  else if (customUi && 'containerFactory' in customUi) {
+  if (customUi && 'containerFactory' in customUi) {
     return new UIManager(player, customUi.containerFactory(), playerConfig.ui);
   }
+
   // If custom UI variants are provided, use them instead of the default UI.
-  else if (customUi && 'variantsFactory' in customUi) {
+  if (customUi && 'variantsFactory' in customUi) {
     return new UIManager(player, customUi.variantsFactory(), playerConfig.ui);
-  } else if ('buildDefaultUI' in UIFactory) {
+  }
+
+  if ('buildDefaultUI' in UIFactory) {
     // UI v3 is loaded
     // @ts-expect-error In UI v3 the method was called buildDefaultUI
     return UIFactory.buildDefaultUI(player, playerConfig.ui);
-  } else {
-    // Initializing the default UI from v4
-    return UIFactory.buildUI(player, playerConfig.ui);
   }
+
+  // Initializing the default UI from v4
+  return UIFactory.buildUI(player, playerConfig.ui);
 }
 
 function convertConfig(originalConfig: PlayerConfig) {
