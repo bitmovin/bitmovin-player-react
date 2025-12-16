@@ -194,6 +194,39 @@ export function MyComponent() {
 
 ## Customize player UI
 
+This library supports both `bitmovin-player-ui` v3 and v4. The version is automatically detected at runtime based on which version you install in your project.
+
+To control which version is used, specify it in your `package.json`:
+
+```json
+{
+  "dependencies": {
+    "bitmovin-player-ui": "^3.104.0"  // for v3
+    // or
+    "bitmovin-player-ui": "^4.0.0"    // for v4
+  }
+}
+```
+
+For `bitmovin-player` versions 8.226.0 and above, you can also use `StyleConfig.uiManagerFactory` to provide a custom UI manager factory directly in the player configuration:
+
+```tsx
+import { PlayerConfig } from "bitmovin-player";
+import { UIManager } from "bitmovin-player-ui";
+
+const playerConfig: PlayerConfig = {
+  key: "<key>",
+  styleConfig: {
+    uiManagerFactory: (player, uiConfig) => {
+      // Return your custom UIManager instance
+      return new UIManager(player, yourCustomUIContainer, uiConfig);
+    }
+  }
+};
+```
+
+**Note:** The `styleConfig.uiManagerFactory` option requires `bitmovin-player` 8.226.0 or higher.
+
 ### Use UI container
 
 You can use `UIContainer` from https://www.npmjs.com/package/bitmovin-player-ui to customize the player UI:
@@ -271,6 +304,42 @@ export function MyComponent() {
   );
 }
 ```
+
+### Use custom UIManager factory
+
+You can provide a custom `UIManager` factory function to have full control over UI initialization:
+
+```tsx
+import { PlayerAPI, UIConfig } from "bitmovin-player";
+import { UIManager, UIContainer, PlaybackToggleOverlay, CustomUi } from "bitmovin-player-ui";
+
+const uiManagerFactory = (player: PlayerAPI, config: UIConfig): UIManager => {
+  const customContainer = new UIContainer({
+    components: [new PlaybackToggleOverlay()],
+  });
+
+  return new UIManager(player, customContainer, config);
+};
+
+const customUi: CustomUi = {
+  managerFactory: uiManagerFactory
+};
+
+export function MyComponent() {
+  return (
+    <Fragment>
+      <h1>Custom UIManager factory demo</h1>
+      <BitmovinPlayer
+        source={playerSource}
+        config={playerConfig}
+        customUi={customUi}
+      />
+    </Fragment>
+  );
+}
+```
+
+This approach gives you the most flexibility, as you can customize both the UI container and the UIManager initialization logic.
 
 ### Use custom CSS
 

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for Bitmovin Player Web UI v4
+- Support for StyleConfig.uiManagerFactory which is available since Player 8.226.0
+
 ## 1.0.3 - 2024-12-17
 
 - Update the attach events example in the README.md

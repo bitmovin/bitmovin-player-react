@@ -9,8 +9,8 @@ jest.mock('bitmovin-player', () => {
 
 import { render, waitFor } from '@testing-library/react';
 import { PlayerAPI, PlayerConfig, SourceConfig } from 'bitmovin-player';
-import { PlaybackToggleOverlay, TitleBar, UIContainer } from 'bitmovin-player-ui';
-import { UIManager, UIVariant } from 'bitmovin-player-ui/dist/js/framework/uimanager.js';
+import { PlaybackToggleOverlay, TitleBar, UIContainer, UIFactory } from 'bitmovin-player-ui';
+import { UIManager, UIVariant } from 'bitmovin-player-ui/dist/js/framework/UIManager.js';
 import { MutableRefObject, RefCallback, StrictMode } from 'react';
 
 import { BitmovinPlayer } from './BitmovinPlayer.js';
@@ -121,148 +121,167 @@ describe('BitmovinPlayer', () => {
   });
 
   describe('UI', () => {
-    // Some default UI elements, not the full list.
-    const defaultUiElementSelectors = [
-      '.bmpui-ui-subtitle-overlay',
-      '.bmpui-ui-buffering-overlay',
-      '.bmpui-ui-cast-status-overlay',
-      '.bmpui-ui-controlbar',
-      '.bmpui-ui-titlebar',
-      '.bmpui-ui-recommendation-overlay',
-      '.bmpui-ui-watermark',
-    ];
+    describe('Default UI', () => {
+      describe('Initialization', () => {
+        it('should initialize the default UI', async () => {
+          jest.spyOn(UIFactory, 'buildUI');
+          render(<BitmovinPlayer config={playerConfig} />);
 
-    it('should initialize the default UI', async () => {
-      const { getBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
-        queries,
-      });
-
-      defaultUiElementSelectors.forEach(selector => {
-        expect(getBySelector(selector)).toBeInTheDocument();
-      });
-    });
-
-    it('should initialize the default UI with the provided UI config', () => {
-      const { getBySelector } = render(
-        <BitmovinPlayer
-          config={{
-            ...playerConfig,
-            ui: {
-              metadata: {
-                title: 'Sintel',
-                description: 'A short film by Blender Foundation',
-              },
-            },
-          }}
-        />,
-        {
-          queries,
-        },
-      );
-
-      expect(getBySelector('.bmpui-ui-titlebar')).toBeInTheDocument();
-
-      expect(getBySelector('.bmpui-label-metadata-title')).toBeInTheDocument();
-      expect(getBySelector('.bmpui-label-metadata-title')).toHaveTextContent('Sintel');
-
-      expect(getBySelector('.bmpui-label-metadata-description')).toBeInTheDocument();
-      expect(getBySelector('.bmpui-label-metadata-description')).toHaveTextContent(
-        'A short film by Blender Foundation',
-      );
-    });
-
-    it('should initialize the UI using the `UIContainer`', () => {
-      const uiContainerFactory = () =>
-        new UIContainer({
-          components: [new PlaybackToggleOverlay()],
+          expect(UIFactory.buildUI).toHaveBeenCalledTimes(1);
+          expect(UIFactory.buildUI).toHaveBeenCalledWith(expect.any(FakePlayer), undefined);
         });
 
-      const { getBySelector } = render(
-        <BitmovinPlayer
-          config={playerConfig}
-          customUi={{
-            containerFactory: uiContainerFactory,
-          }}
-        />,
-        {
-          queries,
-        },
-      );
+        it('should initialize with the provided UI config', () => {
+          const uiConfig = {
+            metadata: {
+              title: 'Sintel',
+              description: 'A short film by Blender Foundation',
+            },
+          };
 
-      expect(getBySelector('.bmpui-ui-hugeplaybacktogglebutton')).toBeInTheDocument();
+          jest.spyOn(UIFactory, 'buildUI');
 
-      defaultUiElementSelectors.forEach(selector => {
-        expect(getBySelector(selector)).not.toBeInTheDocument();
+          render(
+            <BitmovinPlayer
+              config={{
+                ...playerConfig,
+                ui: uiConfig,
+              }}
+            />,
+          );
+
+          expect(UIFactory.buildUI).toHaveBeenCalledTimes(1);
+          expect(UIFactory.buildUI).toHaveBeenCalledWith(expect.any(FakePlayer), uiConfig);
+        });
+      });
+
+      describe('Rendering', () => {
+        it('should render minimal UI elements before source is loaded (v4 behavior)', () => {
+          const { getBySelector } = render(<BitmovinPlayer config={playerConfig} />, {
+            queries,
+          });
+
+          expect(getBySelector('.bmpui-ui-buffering-overlay')).toBeInTheDocument();
+          expect(getBySelector('.bmpui-ui-playbacktoggle-overlay')).toBeInTheDocument();
+        });
       });
     });
 
-    it('should initialize the UI using the `UIVariant[]`', () => {
-      const uiVariantsFactory = (): UIVariant[] => [
-        {
-          ui: new UIContainer({
-            components: [new PlaybackToggleOverlay()],
-          }),
-          condition: context => !context.isFullscreen,
-        },
-      ];
+    describe('Custom UI', () => {
+      describe('Initialization', () => {
+        it('should initialize using a UIContainer factory', () => {
+          jest.spyOn(UIFactory, 'buildUI');
 
-      const { getBySelector } = render(
-        <BitmovinPlayer
-          config={playerConfig}
-          customUi={{
-            variantsFactory: uiVariantsFactory,
-          }}
-        />,
-        {
-          queries,
-        },
-      );
+          const uiContainerFactory = jest.fn(
+            () =>
+              new UIContainer({
+                components: [new PlaybackToggleOverlay()],
+              }),
+          );
 
-      expect(getBySelector('.bmpui-ui-hugeplaybacktogglebutton')).toBeInTheDocument();
+          render(
+            <BitmovinPlayer
+              config={playerConfig}
+              customUi={{
+                containerFactory: uiContainerFactory,
+              }}
+            />,
+          );
 
-      defaultUiElementSelectors.forEach(selector => {
-        expect(getBySelector(selector)).not.toBeInTheDocument();
-      });
-    });
-
-    it('should initialize the custom UI with the provided UI config', () => {
-      const uiContainerFactory = () =>
-        new UIContainer({
-          components: [new TitleBar()],
+          expect(UIFactory.buildUI).not.toHaveBeenCalled();
+          expect(uiContainerFactory).toHaveBeenCalled();
         });
 
-      const { getBySelector } = render(
-        <BitmovinPlayer
-          config={{
-            ...playerConfig,
-            ui: {
-              metadata: {
-                title: 'Sintel',
-                description: 'A short film by Blender Foundation',
-              },
+        it('should initialize using a UIVariant[] factory', () => {
+          jest.spyOn(UIFactory, 'buildUI');
+
+          const uiVariantsFactory = jest.fn((): UIVariant[] => [
+            {
+              ui: new UIContainer({
+                components: [new PlaybackToggleOverlay()],
+              }),
+              condition: context => !context.isFullscreen,
             },
-          }}
-          customUi={{
-            containerFactory: uiContainerFactory,
-          }}
-        />,
-        {
-          queries,
-        },
-      );
+          ]);
 
-      expect(getBySelector('.bmpui-ui-titlebar')).toBeInTheDocument();
+          render(
+            <BitmovinPlayer
+              config={playerConfig}
+              customUi={{
+                variantsFactory: uiVariantsFactory,
+              }}
+            />,
+          );
 
-      expect(getBySelector('.bmpui-label-metadata-title')).toBeInTheDocument();
-      expect(getBySelector('.bmpui-label-metadata-title')).toHaveTextContent('Sintel');
+          expect(UIFactory.buildUI).not.toHaveBeenCalled();
+          expect(uiVariantsFactory).toHaveBeenCalled();
+        });
+      });
 
-      expect(getBySelector('.bmpui-label-metadata-description')).toBeInTheDocument();
-      expect(getBySelector('.bmpui-label-metadata-description')).toHaveTextContent(
-        'A short film by Blender Foundation',
-      );
+      describe('Rendering', () => {
+        it('should render custom UI components correctly', () => {
+          const uiContainerFactory = () =>
+            new UIContainer({
+              components: [new TitleBar()],
+            });
+
+          const { getBySelector } = render(
+            <BitmovinPlayer
+              config={playerConfig}
+              customUi={{
+                containerFactory: uiContainerFactory,
+              }}
+            />,
+            {
+              queries,
+            },
+          );
+
+          expect(getBySelector('.bmpui-ui-titlebar')).toBeInTheDocument();
+        });
+
+        it('should render custom UI with the provided UI config', () => {
+          const uiContainerFactory = () =>
+            new UIContainer({
+              components: [new TitleBar()],
+            });
+
+          const { getBySelector } = render(
+            <BitmovinPlayer
+              config={{
+                ...playerConfig,
+                ui: {
+                  metadata: {
+                    title: 'Sintel',
+                    description: 'A short film by Blender Foundation',
+                  },
+                },
+              }}
+              customUi={{
+                containerFactory: uiContainerFactory,
+              }}
+            />,
+            {
+              queries,
+            },
+          );
+
+          expect(getBySelector('.bmpui-ui-titlebar')).toBeInTheDocument();
+
+          expect(getBySelector('.bmpui-label-metadata-title')).toBeInTheDocument();
+          expect(getBySelector('.bmpui-label-metadata-title')).toHaveTextContent('Sintel');
+
+          expect(getBySelector('.bmpui-label-metadata-description')).toBeInTheDocument();
+          expect(getBySelector('.bmpui-label-metadata-description')).toHaveTextContent(
+            'A short film by Blender Foundation',
+          );
+        });
+      });
     });
 
-    it('should not initialize any UI', () => {
+    it('should not initialize any UI when disabled', () => {
+      jest.spyOn(UIFactory, 'buildUI');
+
       const { getBySelector } = render(
         <BitmovinPlayer
           config={{
@@ -275,9 +294,10 @@ describe('BitmovinPlayer', () => {
         },
       );
 
-      defaultUiElementSelectors.forEach(selector => {
-        expect(getBySelector(selector)).not.toBeInTheDocument();
-      });
+      expect(getBySelector('.bmpui-ui-buffering-overlay')).not.toBeInTheDocument();
+      expect(getBySelector('.bmpui-ui-playbacktoggle-overlay')).not.toBeInTheDocument();
+
+      expect(UIFactory.buildUI).not.toHaveBeenCalled();
     });
 
     describe('Cleanup', () => {

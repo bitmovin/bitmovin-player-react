@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "bitmovin-player": "^8.0.0",
-    "bitmovin-player-ui": "^3.60.0",
+    "bitmovin-player-ui": "^3 || ^4",
     "react": "^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
