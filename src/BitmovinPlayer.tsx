@@ -59,7 +59,7 @@ export const BitmovinPlayer = forwardRef(function BitmovinPlayer(
   const isSourceChangedAtLeastOnce = useRef<boolean>(false);
 
   const [player, setPlayer] = useState<PlayerAPI | undefined>();
-  const latestPlayerRef = useRef<PlayerAPI | undefined>();
+  const latestPlayerRef = useRef<PlayerAPI | undefined>(undefined);
 
   const proxyPlayerRef = useCallback(
     (player: PlayerAPI) => {
